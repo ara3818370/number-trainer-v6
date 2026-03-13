@@ -45,6 +45,8 @@ let currentCategory = null;
 let sessionLength = 10;
 let isProcessingAnswer = false;
 let onboardingFlow = null;
+let currentQuestionText = '';
+let isAnswerPhase = false;
 
 // ── Boot Sequence ──────────────────────────────────────────────────────────
 
@@ -357,6 +359,26 @@ function startTraining(categoryId) {
   playNextRound();
 }
 
+function hideReplayButton() {
+  const replayBtn = document.getElementById('btn-replay');
+  if (replayBtn) {
+    replayBtn.classList.add('replay-button--hidden');
+    replayBtn.classList.remove('replay-button--playing');
+  }
+}
+
+function showReplayButton() {
+  const mode = getSetting('mode');
+  const soundsOn = getSetting('sounds');
+  // Don't show in reading mode or when sounds are off
+  if (mode === 'reading' || soundsOn === false) return;
+  const replayBtn = document.getElementById('btn-replay');
+  if (replayBtn) {
+    replayBtn.setAttribute('aria-label', t('replay.aria'));
+    replayBtn.classList.remove('replay-button--hidden');
+  }
+}
+
 function playNextRound() {
   if (game.isSessionComplete(sessionLength)) {
     showSummary();
@@ -364,6 +386,9 @@ function playNextRound() {
   }
 
   isProcessingAnswer = false;
+  isAnswerPhase = false;
+  currentQuestionText = '';
+  hideReplayButton();
 
   const round = game.generateQuestion();
   if (!round) {
@@ -388,6 +413,8 @@ function playNextRound() {
   if (mode === 'reading') {
     showReadingCard(round.target.ttsText);
     hidePlayButton();
+    hideReplayButton(); // Never show replay in reading mode
+    isAnswerPhase = true;
     setTimeout(() => renderOptions(round.options, round.target), CONTEMPLATION_PAUSE_MS);
   } else {
     hideReadingCard();
@@ -406,8 +433,11 @@ async function playAudioRound(round) {
 
   if (playBtn) playBtn.classList.add('playing');
 
+  // Store current question text for replay
+  const sentence = game.getCurrentSentence();
+  currentQuestionText = sentence || '';
+
   try {
-    const sentence = game.getCurrentSentence();
     if (sentence) {
       await tts.speak(sentence, getSetting('speed'));
     }
@@ -417,6 +447,10 @@ async function playAudioRound(round) {
   }
 
   if (playBtn) playBtn.classList.remove('playing');
+
+  // Show replay button after initial TTS completes (audio mode only)
+  showReplayButton();
+  isAnswerPhase = true;
 
   await delay(CONTEMPLATION_PAUSE_MS);
   renderOptions(round.options, round.target);
@@ -454,6 +488,11 @@ function renderOptions(options, target) {
 async function handleAnswer(selectedDisplay, buttonIndex, options, target) {
   if (isProcessingAnswer) return;
   isProcessingAnswer = true;
+  isAnswerPhase = false;
+
+  // Cancel any replay TTS and hide the button
+  speechSynthesis.cancel();
+  hideReplayButton();
 
   const result = game.recordAnswer(selectedDisplay);
   if (!result) { isProcessingAnswer = false; return; }
@@ -736,6 +775,9 @@ function wireEvents() {
     backBtn.addEventListener('click', () => {
       tts.stop();
       game.stopSession();
+      isAnswerPhase = false;
+      currentQuestionText = '';
+      hideReplayButton();
       document.body.style.filter = '';
       showScreen('menu');
     });
@@ -759,6 +801,46 @@ function wireEvents() {
       }
     });
   }
+
+  // Replay button
+  const replayBtn = document.getElementById('btn-replay');
+  if (replayBtn) {
+    replayBtn.addEventListener('click', () => {
+      if (!currentQuestionText || isProcessingAnswer) return;
+      if (!isAnswerPhase) return;
+      speechSynthesis.cancel();
+      replayBtn.classList.add('replay-button--playing');
+      if (getSetting('haptics')) haptics.hapticCorrect(); // light tap
+      setTimeout(() => {
+        tts.speak(currentQuestionText, getSetting('speed')).then(() => {
+          replayBtn.classList.remove('replay-button--playing');
+        }).catch(() => {
+          replayBtn.classList.remove('replay-button--playing');
+        });
+      }, 50);
+    });
+  }
+
+  // Reset replay button state on app resume (visibilitychange)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      const replayEl = document.getElementById('btn-replay');
+      if (replayEl) replayEl.classList.remove('replay-button--playing');
+    }
+  });
+
+  // Keyboard shortcut: R for replay
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'r' || e.key === 'R') {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (!isAnswerPhase || isProcessingAnswer) return;
+      if (!currentQuestionText) return;
+      const replayEl = document.getElementById('btn-replay');
+      if (replayEl && !replayEl.classList.contains('replay-button--hidden')) {
+        replayEl.click();
+      }
+    }
+  });
 
   // Summary buttons
   const againBtn = document.getElementById('btn-new-session');
