@@ -715,6 +715,10 @@ function showToast(message, durationMs = 2500) {
 // ── Event Wiring ───────────────────────────────────────────────────────────
 
 function wireEvents() {
+  // iOS: unlock AudioContext on first user interaction anywhere
+  document.addEventListener('click', () => sound.ensureContext(), { once: true });
+  document.addEventListener('touchstart', () => sound.ensureContext(), { once: true });
+
   wireLangSelect();
 
   // Settings button → open bottom sheet
