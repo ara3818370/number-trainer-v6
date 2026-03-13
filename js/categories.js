@@ -59,7 +59,7 @@ function decimalToWords(n) { return dispatch(enDecimal, deDecimal, ukDecimal, n)
 function currencyToWords(amount) { return dispatch(enCurrency, deCurrency, ukCurrency, amount); }
 function percentageToWords(n) { return dispatch(enPercentage, dePercentage, ukPercentage, n); }
 function roomBusToWords(type, number) { return dispatch(enRoomBus, deRoomBus, ukRoomBus, type, number); }
-function scoreToWords(home, away) { return dispatch(enScore, deScore, ukScore, home, away); }
+function scoreToWords(home, away, sport) { return dispatch(enScore, deScore, ukScore, home, away, sport); }
 function temperatureToWords(temp) { return dispatch(enTemperature, deTemperature, ukTemperature, temp); }
 function largeNumberToWords(n) { return dispatch(enLarge, deLarge, ukLarge, n); }
 
@@ -1027,13 +1027,44 @@ function generateRoomBus() {
  * @returns {import('./types').CategoryValue}
  */
 function generateSportsScore() {
-  const home = randInt(0, 7);
-  const away = randInt(0, 5);
+  const TENNIS_SCORES = [0, 15, 30, 40];
+  const isTennis = Math.random() < 0.3; // 30% tennis, 70% football
+
+  if (isTennis) {
+    const home = pick(TENNIS_SCORES);
+    const away = pick(TENNIS_SCORES);
+    const display = home + ':' + away;
+    return {
+      value: { home, away, sport: 'tennis' },
+      display,
+      ttsText: scoreToWords(home, away, 'tennis'),
+      lastDigit: away % 10,
+      category: 'sports',
+    };
+  }
+
+  // Football — bias toward "interesting" scores (nil, all)
+  let home, away;
+  const r = Math.random();
+  if (r < 0.25) {
+    // Score with nil (0) — 25%
+    home = randInt(1, 7);
+    away = 0;
+    if (Math.random() < 0.5) { const t = home; home = away; away = t; }
+  } else if (r < 0.40) {
+    // Draw (X all) — 15%
+    home = randInt(0, 5);
+    away = home;
+  } else {
+    // Regular score — 60%
+    home = randInt(0, 7);
+    away = randInt(0, 5);
+  }
 
   return {
-    value: { home, away },
+    value: { home, away, sport: 'football' },
     display: home + ':' + away,
-    ttsText: scoreToWords(home, away),
+    ttsText: scoreToWords(home, away, 'football'),
     lastDigit: away,
     category: 'sports',
   };
