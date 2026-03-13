@@ -572,6 +572,61 @@ button {
   word-break: break-word;
 }
 
+/* ── Replay Button ─────────────────────────────────────────────────────────── */
+
+.replay-button {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--color-primary);
+  cursor: pointer;
+  margin: 8px auto 12px;
+  padding: 0;
+  transition: opacity 150ms ease, transform 100ms ease-out;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.replay-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.replay-button:active {
+  transform: scale(0.9);
+  opacity: 0.5;
+}
+
+.replay-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.replay-button--hidden {
+  display: none !important;
+}
+
+.replay-button--playing {
+  animation: replay-pulse 1s ease-in-out infinite;
+}
+
+@keyframes replay-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .replay-button--playing {
+    animation: none;
+    opacity: 0.7;
+  }
+}
+
 /* ── Options Grid ──────────────────────────────────────────────────────────── */
 
 .options-grid {
