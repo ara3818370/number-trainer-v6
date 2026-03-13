@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Number Trainer">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <title>Number Trainer</title>
+
+  <!-- FOUC prevention -->
+  <script>
+    (function(){
+      var s;
+      try { s = JSON.parse(localStorage.getItem('nlt-settings')); } catch(e){}
+      var t = s && s.theme;
+      if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       Screen 1: Language Selection (first launch only)
+       ════════════════════════════════════════════════════════════════════ -->
+
+  <section id="screen-lang-select" class="screen">
+    <div class="lang-select-content">
+      <h1 class="lang-select-title">Number Trainer</h1>
+      <p class="lang-select-subtitle">Choose language</p>
+
+      <div class="lang-select-buttons">
+        <button class="lang-select-btn" data-lang="en">
+          <span class="lang-flag">🇬🇧</span>
+          <span class="lang-name">English</span>
+        </button>
+        <button class="lang-select-btn" data-lang="de">
+          <span class="lang-flag">🇩🇪</span>
+          <span class="lang-name">Deutsch</span>
+        </button>
+        <button class="lang-select-btn" data-lang="uk">
+          <span class="lang-flag">🇺🇦</span>
+          <span class="lang-name">Українська</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       Screen 2: Onboarding (first launch, after language)
+       ════════════════════════════════════════════════════════════════════ -->
+
+  <section id="screen-onboarding" class="screen">
+    <div class="onboarding-content">
+      <!-- Play button (same style as training) -->
+      <button id="onboarding-circle" class="play-button" role="button" aria-label="Play number">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="none"/>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+        </svg>
+      </button>
+
+      <!-- Two options (full-width, stacked) -->
+      <div id="onboarding-options" class="onboarding-options"></div>
+
+      <!-- Message after answer -->
+      <p id="onboarding-message" class="onboarding-message hidden" aria-live="polite"></p>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       Screen 3: Category Selection (Menu)
+       ════════════════════════════════════════════════════════════════════ -->
+
+  <section id="screen-menu" class="screen">
+    <div class="menu-header">
+      <h1 class="menu-title" data-i18n="menu.title">Number Trainer</h1>
+      <button id="btn-settings" class="settings-trigger" aria-label="Settings">
+        <!-- Two-slider settings icon per Jony spec -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="7" x2="20" y2="7"/>
+          <circle cx="8" cy="7" r="2.5"/>
+          <line x1="4" y1="17" x2="20" y2="17"/>
+          <circle cx="16" cy="17" r="2.5"/>
+        </svg>
+        <span class="settings-dot"></span>
+      </button>
+    </div>
+
+    <div id="category-grid" class="category-grid" data-count="12"></div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       Screen 4: Training
+       ════════════════════════════════════════════════════════════════════ -->
+
+  <section id="screen-training" class="screen">
+    <div class="training-header">
+      <button id="btn-back" class="training-back" aria-label="Back">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <span id="training-category" class="training-category"></span>
+      <span id="training-score" class="training-score">
+        <span id="score-fraction">0/0</span> <strong id="score-percent">0%</strong>
+      </span>
+    </div>
+
+    <div class="training-area">
+      <!-- Audio mode: play button -->
+      <button id="play-button" class="play-button" aria-label="Play">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="none"/>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+        </svg>
+      </button>
+
+      <!-- Reading mode: text card -->
+      <div id="reading-card" class="reading-card hidden">
+        <span id="reading-card-number" class="reading-card-number"></span>
+      </div>
+
+      <!-- Options 2×2 grid -->
+      <div id="options-grid" class="options-grid"></div>
+
+      <!-- Next button (hidden until wrong answer) -->
+      <button id="btn-next" class="btn-primary hidden" data-i18n="training.next">Next</button>
+    </div>
+
+    <!-- Progress bar -->
+    <div id="progress-bar" class="progress-bar">
+      <div id="progress-fill" class="progress-bar__fill" style="width: 0%"></div>
+    </div>
+
+    <!-- Streak counter -->
+    <span id="streak-counter" class="streak-counter"></span>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       Screen 5: Summary
+       ════════════════════════════════════════════════════════════════════ -->
+
+  <section id="screen-summary" class="screen">
+    <div class="summary-screen">
+      <div id="summary-percent" class="summary-percent">0%</div>
+      <p class="summary-detail">
+        <span id="summary-correct">0</span> / <span id="summary-total">0</span>
+      </p>
+      <p id="summary-category" class="summary-category"></p>
+      <p id="summary-motivation" class="summary-motivation hidden"></p>
+
+      <div class="summary-actions">
+        <button id="btn-new-session" class="btn-primary" data-i18n="summary.again">Again</button>
+        <button id="btn-home" class="btn-secondary" data-i18n="summary.categories">All Categories</button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       Settings Bottom Sheet
+       ════════════════════════════════════════════════════════════════════ -->
+
+  <div id="settings-scrim" class="settings-scrim"></div>
+  <div id="settings-panel" class="settings-panel" role="dialog" aria-label="Settings">
+    <div class="settings-drag-handle"></div>
+    <div class="settings-title-row">
+      <span class="settings-title" data-i18n="settings.title">Settings</span>
+      <button id="settings-close" class="settings-close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mode -->
+    <div class="segmented-control" id="mode-control"></div>
+
+    <!-- Learning Language -->
+    <div class="settings-section-label" data-i18n="settings.learning">Learning</div>
+    <div class="segmented-control" id="learn-lang-control"></div>
+
+    <!-- Speed -->
+    <div class="settings-section-label" data-i18n="settings.speed">Speed</div>
+    <div class="segmented-control" id="speed-control"></div>
+
+    <!-- Session Length -->
+    <div class="settings-section-label" data-i18n="settings.session">Session</div>
+    <div class="segmented-control" id="session-control"></div>
+
+    <div class="settings-divider"></div>
+
+    <!-- Interface Language -->
+    <div class="settings-section-label" data-i18n="settings.interface">Interface</div>
+    <div class="segmented-control" id="ui-lang-control"></div>
+
+    <!-- Theme -->
+    <div class="settings-section-label" data-i18n="settings.theme">Theme</div>
+    <div class="segmented-control" id="theme-control"></div>
+
+    <!-- Unlock All -->
+    <div id="unlock-all-btn" class="unlock-all"></div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       Toast notification
+       ════════════════════════════════════════════════════════════════════ -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+
+  <!-- JS entry point -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
