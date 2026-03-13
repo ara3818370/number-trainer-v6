@@ -483,10 +483,17 @@ async function handleAnswer(selectedDisplay, buttonIndex, options, target) {
     handleStreakEffects(result.streak);
 
     if (getSetting('mode') !== 'reading') {
-      setTimeout(() => tts.speak(target.ttsText, getSetting('speed')).catch(() => {}), TTS_REINFORCE_DELAY_MS);
+      // Wait for reinforcement delay, then speak AND wait for it to finish
+      await delay(TTS_REINFORCE_DELAY_MS);
+      try {
+        await tts.speak(target.ttsText, getSetting('speed'));
+      } catch { /* TTS failed, continue */ }
+      // Short pause after reinforcement before next round
+      await delay(400);
+    } else {
+      await delay(CORRECT_HOLD_MS);
     }
 
-    await delay(CORRECT_HOLD_MS);
     playNextRound();
 
   } else {
@@ -498,17 +505,20 @@ async function handleAnswer(selectedDisplay, buttonIndex, options, target) {
     if (soundsOn) sound.playWrong();
     if (hapticsOn) haptics.hapticWrong();
 
-    setTimeout(() => {
-      if (buttons[result.correctIndex]) buttons[result.correctIndex].classList.add('reveal-correct');
-      if (getSetting('mode') !== 'reading') {
-        tts.speak(target.ttsText, getSetting('speed')).catch(() => {});
-      }
-    }, 300);
+    await delay(300);
+    if (buttons[result.correctIndex]) buttons[result.correctIndex].classList.add('reveal-correct');
+
+    if (getSetting('mode') !== 'reading') {
+      try {
+        await tts.speak(target.ttsText, getSetting('speed'));
+      } catch { /* TTS failed */ }
+      await delay(600);
+    } else {
+      await delay(WRONG_HOLD_MS - 300);
+    }
 
     document.body.style.filter = '';
     updateStreakDisplay(0);
-
-    await delay(WRONG_HOLD_MS);
     playNextRound();
   }
 }
