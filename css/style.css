@@ -498,12 +498,12 @@ button {
 
 .training-area {
   flex: 1;
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 0;
   padding-bottom: 24px;
-  overflow: hidden;
 }
 
 /* ── Play Button ───────────────────────────────────────────────────────────── */
@@ -518,19 +518,15 @@ button {
   align-items: center;
   justify-content: center;
   color: #fff;
-  /* Fixed position: always 28% from top of training area */
-  position: absolute;
-  top: 28%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  margin: 32px auto 24px;
   cursor: pointer;
   transition: transform 0.15s ease, background-color 0.15s ease;
   box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
-  z-index: 1;
+  flex-shrink: 0;
 }
 
 .play-button:active {
-  transform: translate(-50%, -50%) scale(0.92);
+  transform: scale(0.92);
   background: var(--color-primary-hover);
 }
 
@@ -541,35 +537,11 @@ button {
 
 .play-button.hidden { display: none; }
 
-/* Replayable state — subtle indicator that circle is tappable for replay */
-.play-button.replayable {
-  cursor: pointer;
-  position: relative;
-}
-
-.play-button.replayable::after {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.6);
-  animation: replayable-dot 2s ease-in-out infinite;
-}
-
-@keyframes replayable-dot {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
 /* Pulse on new question */
 @keyframes pulse-once {
-  0%   { transform: translate(-50%, -50%) scale(1); }
-  50%  { transform: translate(-50%, -50%) scale(1.06); }
-  100% { transform: translate(-50%, -50%) scale(1); }
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
 }
 
 .play-button.pulse { animation: pulse-once 0.6s var(--ease-default); }
@@ -580,18 +552,14 @@ button {
 /* ── Reading Card ──────────────────────────────────────────────────────────── */
 
 .reading-card {
-  /* Fixed position matching play-button zone */
-  position: absolute;
-  top: 28%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: calc(100% - 40px);
+  width: 100%;
   padding: 32px 20px;
+  margin: 20px 0 24px;
   background: var(--color-bg);
   border: 1.5px solid var(--color-border);
   border-radius: 16px;
   text-align: center;
-  z-index: 1;
+  flex-shrink: 0;
 }
 
 .reading-card.hidden { display: none; }
@@ -617,13 +585,11 @@ button {
   border-radius: 50%;
   color: var(--color-primary);
   cursor: pointer;
-  margin: 0 auto 8px;
+  margin: 8px auto 12px;
   padding: 0;
-  transition: opacity 150ms ease, visibility 150ms ease, transform 100ms ease-out;
+  transition: opacity 150ms ease, transform 100ms ease-out;
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
-  /* Push replay + options to bottom of training area */
-  margin-top: auto;
 }
 
 .replay-button svg {
@@ -642,9 +608,7 @@ button {
 }
 
 .replay-button--hidden {
-  visibility: hidden;
-  opacity: 0;
-  pointer-events: none;
+  display: none !important;
 }
 
 .replay-button--playing {
@@ -1083,9 +1047,9 @@ button {
    ══════════════════════════════════════════════════════════════════════════════ */
 
 @keyframes audioPlay {
-  0%  { transform: translate(-50%, -50%) scale(1); }
-  15% { transform: translate(-50%, -50%) scale(1.08); }
-  100% { transform: translate(-50%, -50%) scale(1); }
+  0%  { transform: scale(1); }
+  15% { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
 
 @keyframes shake {
@@ -1106,9 +1070,9 @@ button {
 }
 
 @keyframes bloom {
-  0%   { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
-  50%  { transform: translate(-50%, -50%) scale(1.15); filter: brightness(1.2); }
-  100% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
+  0%   { transform: scale(1); filter: brightness(1); }
+  50%  { transform: scale(1.15); filter: brightness(1.2); }
+  100% { transform: scale(1); filter: brightness(1); }
 }
 
 @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
