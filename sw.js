@@ -1,7 +1,7 @@
 // sw.js — Service Worker: Cache First with Network Fallback
 // Number Trainer v6 "Jony Ive Edition"
 
-const CACHE_VERSION = 'nlt-v6h';
+const CACHE_VERSION = 'nlt-v6i';
 const ASSETS = [
   './',
   './index.html',
