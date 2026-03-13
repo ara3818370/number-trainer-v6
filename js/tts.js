@@ -248,8 +248,9 @@ export function speak(text, speed = 'normal') {
 
       // iOS workaround: sometimes onend doesn't fire.
       // Use a safety timeout based on estimated speech duration.
+      // Generous multiplier for long texts (large numbers, currencies).
       let ended = false;
-      const estimatedMs = Math.max(text.length * 80 / (RATE_MAP[speed] || 1), 500);
+      const estimatedMs = Math.max(text.length * 120 / (RATE_MAP[speed] || 1), 1000);
       const safetyTimeout = setTimeout(() => {
         if (!ended) {
           ended = true;
@@ -302,7 +303,10 @@ export function speakReinforcement(text) {
       return;
     }
 
-    // Don't cancel — this might overlap slightly, which is fine
+    // Cancel previous speech before reinforcement
+    speechSynthesis.cancel();
+
+    setTimeout(() => {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = voice;
     const langMap = { de: 'de-DE', uk: 'uk-UA', en: 'en-US' };
@@ -311,9 +315,11 @@ export function speakReinforcement(text) {
     utterance.pitch = 1.0;
 
     let ended = false;
+    // Generous timeout for large numbers (e.g. "дев'ятсот п'ятдесят три тисячі...")
+    const estimatedMs = Math.max(text.length * 120, 2000);
     const safetyTimeout = setTimeout(() => {
       if (!ended) { ended = true; resolve(); }
-    }, 5000);
+    }, estimatedMs + 3000);
 
     utterance.onend = () => {
       if (!ended) { ended = true; clearTimeout(safetyTimeout); resolve(); }
@@ -324,6 +330,7 @@ export function speakReinforcement(text) {
     };
 
     speechSynthesis.speak(utterance);
+    }, 100); // Brief delay after cancel
   });
 }
 
