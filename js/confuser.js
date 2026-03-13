@@ -53,7 +53,7 @@ function decimalToWords(n) { return dispatch(enDecimal, deDecimal, ukDecimal, n)
 function currencyToWords(a) { return dispatch(enCurrency, deCurrency, ukCurrency, a); }
 function percentageToWords(n) { return dispatch(enPercentage, dePercentage, ukPercentage, n); }
 function roomBusToWords(t, n) { return dispatch(enRoomBus, deRoomBus, ukRoomBus, t, n); }
-function scoreToWords(h, a) { return dispatch(enScore, deScore, ukScore, h, a); }
+function scoreToWords(h, a, sport) { return dispatch(enScore, deScore, ukScore, h, a, sport); }
 function temperatureToWords(t) { return dispatch(enTemperature, deTemperature, ukTemperature, t); }
 function largeNumberToWords(n) { return dispatch(enLarge, deLarge, ukLarge, n); }
 
@@ -518,17 +518,29 @@ function roomBusConfusers(target) {
 // ── Sports confusers ───────────────────────────────────────────────────────
 
 function sportsConfusers(target) {
-  const { home, away } = target.value;
+  const { home, away, sport } = target.value;
   const candidates = [];
+  const TENNIS = [0, 15, 30, 40];
 
   const build = (h, a) => ({
-    value: { home: h, away: a },
+    value: { home: h, away: a, sport },
     display: h + ':' + a,
-    ttsText: scoreToWords(h, a),
-    lastDigit: a,
+    ttsText: scoreToWords(h, a, sport),
+    lastDigit: a % 10,
     category: 'sports',
   });
 
+  if (sport === 'tennis') {
+    // Tennis confusers: swap sides, adjacent tennis scores
+    if (home !== away) candidates.push(build(away, home));
+    for (const s of TENNIS) {
+      if (s !== away) candidates.push(build(home, s));
+      if (s !== home) candidates.push(build(s, away));
+    }
+    return candidates.filter(c => c.display !== target.display);
+  }
+
+  // Football confusers
   if (home !== away) candidates.push(build(away, home));
 
   for (const d of [1, -1]) {
@@ -777,11 +789,19 @@ function createEmergencyFallback(target, seenDisplays) {
 
     switch (cat) {
       case 'sports': {
-        const h = randInt(0, 7);
-        const a = randInt(0, 5);
+        const sport = target.value.sport || 'football';
+        let h, a;
+        if (sport === 'tennis') {
+          const TS = [0, 15, 30, 40];
+          h = TS[randInt(0, 3)];
+          a = TS[randInt(0, 3)];
+        } else {
+          h = randInt(0, 7);
+          a = randInt(0, 5);
+        }
         const display = h + ':' + a;
         if (!seenDisplays.has(display)) {
-          candidate = { value: { home: h, away: a }, display, ttsText: scoreToWords(h, a), lastDigit: a, category: 'sports' };
+          candidate = { value: { home: h, away: a, sport }, display, ttsText: scoreToWords(h, a, sport), lastDigit: a % 10, category: 'sports' };
         }
         break;
       }
