@@ -503,7 +503,20 @@ export function roomBusToWords(type, number) {
  * @param {number} away
  * @returns {string}
  */
-export function scoreToWords(home, away) {
+/**
+ * Convert a sports score to spoken Ukrainian words.
+ * Football: "п'ять нуль". Tennis: "тридцять нуль".
+ * @param {number} home
+ * @param {number} away
+ * @param {string} [sport='football']
+ * @returns {string}
+ */
+export function scoreToWords(home, away, sport = 'football') {
+  if (sport === 'tennis') {
+    if (home === 40 && away === 40) return 'рівно';
+    const tennisWord = (n) => n === 0 ? 'нуль' : cardinalToWords(n, MASCULINE);
+    return tennisWord(home) + ' ' + tennisWord(away);
+  }
   const homeWord = home === 0 ? 'нуль' : cardinalToWords(home, MASCULINE);
   const awayWord = away === 0 ? 'нуль' : cardinalToWords(away, MASCULINE);
   return homeWord + ' ' + awayWord;
