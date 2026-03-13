@@ -441,21 +441,21 @@ const SENTENCES = {
       "Der Steuersatz beträgt {V}.",
     ],
     roomBus: [
-      "Bitte gehen Sie zu {V}.",
-      "Sie brauchen {V}.",
-      "Ich suche {V}.",
-      "Können Sie mir sagen, wo {V} ist?",
-      "Wissen Sie, wo {V} ist?",
+      "{V} — ist das richtig?",
       "{V} sollte in der Nähe sein.",
-      "Man hat mir gesagt, ich soll zu {V} gehen.",
-      "Wir müssen {V} finden.",
-      "Vergessen Sie nicht: {V}.",
-      "Schreiben Sie sich {V} auf.",
-      "Fragen Sie an der Information nach {V}.",
-      "Schauen Sie auf das Schild für {V}.",
-      "Es wurde auf {V} geändert.",
       "Merken Sie sich: {V}.",
       "Entschuldigung, wo ist {V}?",
+      "Können Sie mir sagen, wo {V} ist?",
+      "Wissen Sie, wo {V} ist?",
+      "Ich suche {Va}.",
+      "Wir müssen {Va} finden.",
+      "Haben Sie {Va} gesehen?",
+      "Bitte gehen Sie zu {V}.",
+      "Vergessen Sie nicht: {V}.",
+      "Wir treffen uns in {Vl}.",
+      "Ich warte in {Vl}.",
+      "Die Besprechung ist in {Vl}.",
+      "Fragen Sie an der Rezeption nach {V}.",
     ],
     sports: [
       "Das Endergebnis war {V}.",
@@ -647,21 +647,21 @@ const SENTENCES = {
       "Ставка податку — {V}.",
     ],
     roomBus: [
-      "Ваш номер — {V}.",
-      "На інформаційному табло вказано {V}.",
       "{V} — це правильно?",
-      "Підкажіть, будь ласка, де {V}?",
-      "Ви не знаєте, де {V}?",
       "{V} має бути десь поруч.",
-      "На табличці написано {V}.",
-      "Так, правильно — {V}.",
-      "Не забудьте: {V}.",
-      "Запишіть собі: {V}.",
-      "Зверніть увагу: {V}.",
-      "Подивіться на табло: {V}.",
-      "Повторіть, будь ласка: {V}.",
       "Запам'ятайте: {V}.",
-      "Вибачте, де знаходиться {V}?",
+      "Підкажіть, де знаходиться {V}?",
+      "Я шукаю {Va}.",
+      "Вам потрібно знайти {Va}.",
+      "Ви бачите {Va}?",
+      "Підійдіть до {Vg}.",
+      "Ми шукаємо дорогу до {Vg}.",
+      "Залишилось кілька метрів до {Vg}.",
+      "Зустріч у {Vl}.",
+      "Ми будемо в {Vl}.",
+      "Чекайте в {Vl}.",
+      "Нам треба знайти {Va}.",
+      "Ви вже були в {Vl}?",
     ],
     sports: [
       "Фінальний рахунок — {V}.",
@@ -989,12 +989,34 @@ function generateRoomBus() {
     label = type === 'room' ? 'Room' : 'Bus';
   }
 
+  // Case forms for Ukrainian
+  let cases = null;
+  if (lang() === 'uk') {
+    const ukForms = type === 'room'
+      ? { nom: 'кімната', gen: 'кімнати', acc: 'кімнату', loc: 'кімнаті' }
+      : { nom: 'автобус', gen: 'автобуса', acc: 'автобус', loc: 'автобусі' };
+    cases = {
+      nom: ukForms.nom + ' ' + number,
+      gen: ukForms.gen + ' ' + number,
+      acc: ukForms.acc + ' ' + number,
+      loc: ukForms.loc + ' ' + number,
+    };
+  } else if (lang() === 'de') {
+    cases = {
+      nom: (type === 'room' ? 'Raum ' : 'Bus ') + number,
+      gen: (type === 'room' ? 'Raums ' : 'Busses ') + number,
+      acc: (type === 'room' ? 'den Raum ' : 'den Bus ') + number,
+      loc: (type === 'room' ? 'Raum ' : 'Bus ') + number,
+    };
+  }
+
   return {
     value: { type, number },
     display: label + ' ' + number,
     ttsText: roomBusToWords(type, number),
     lastDigit: number % 10,
     category: 'roomBus',
+    cases,
   };
 }
 
@@ -1147,6 +1169,16 @@ export function getSentence(cv) {
   const langSentences = SENTENCES[lang()] || SENTENCES.en;
   const templates = langSentences[templateCat] || langSentences.cardinals;
   const template = pick(templates);
+  
+  // Case-aware replacement (Ukrainian/German roomBus)
+  if (cv.cases) {
+    return template
+      .replace('{Vg}', cv.cases.gen)
+      .replace('{Va}', cv.cases.acc)
+      .replace('{Vl}', cv.cases.loc)
+      .replace('{V}', cv.cases.nom);
+  }
+  
   return template.replace('{V}', cv.ttsText);
 }
 
