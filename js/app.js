@@ -365,6 +365,9 @@ function hideReplayButton() {
     replayBtn.classList.add('replay-button--hidden');
     replayBtn.classList.remove('replay-button--playing');
   }
+  // Remove replayable indicator from circle
+  const playBtn = document.getElementById('play-button');
+  if (playBtn) playBtn.classList.remove('replayable');
 }
 
 function showReplayButton() {
@@ -377,6 +380,9 @@ function showReplayButton() {
     replayBtn.setAttribute('aria-label', t('replay.aria'));
     replayBtn.classList.remove('replay-button--hidden');
   }
+  // Add replayable indicator to circle
+  const playBtn = document.getElementById('play-button');
+  if (playBtn) playBtn.classList.add('replayable');
 }
 
 function playNextRound() {
