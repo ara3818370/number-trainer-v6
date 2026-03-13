@@ -103,42 +103,42 @@ const A3 = 220;
 // ── Public API ─────────────────────────────────────────────────────────────
 
 /**
- * Play correct answer chime: C5, attack 10ms, sustain 50ms, release 140ms, vol 0.15
+ * Play correct answer chime: C5, bright and satisfying
  */
 export function playCorrect() {
   if (!enabled) return;
-  playTone(C5, 10, 50, 140, 0.15);
+  playTone(C5, 10, 60, 180, 0.45);
 }
 
 /**
- * Play wrong answer tone: A3, attack 10ms, sustain 80ms, release 110ms, vol 0.10
+ * Play wrong answer tone: A3, lower and distinct
  */
 export function playWrong() {
   if (!enabled) return;
-  playTone(A3, 10, 80, 110, 0.10);
+  playTone(A3, 10, 100, 150, 0.35);
 }
 
 /**
- * Play session complete fanfare: C5→E5→G5, each 100ms, 100ms gaps, vol 0.12
+ * Play session complete fanfare: C5→E5→G5 arpeggio
  */
 export function playComplete() {
   if (!enabled) return;
-  const noteDur = 100; // ms total per note (10 attack + 40 sustain + 50 release)
-  const gapSec = 0.1;  // 100ms between note starts = 200ms spacing
-  playTone(C5, 10, 40, 50, 0.12, 0);
-  playTone(E5, 10, 40, 50, 0.12, (noteDur / 1000) + gapSec);
-  playTone(G5, 10, 40, 50, 0.12, ((noteDur / 1000) + gapSec) * 2);
+  const noteDur = 100;
+  const gapSec = 0.1;
+  playTone(C5, 10, 50, 60, 0.40, 0);
+  playTone(E5, 10, 50, 60, 0.40, (noteDur / 1000) + gapSec);
+  playTone(G5, 10, 50, 60, 0.40, ((noteDur / 1000) + gapSec) * 2);
 }
 
 /**
- * Play streak milestone arpeggio: C5→E5→G5, 50ms each, no gaps, vol 0.08
+ * Play streak milestone arpeggio: C5→E5→G5, quick
  */
 export function playStreak() {
   if (!enabled) return;
   const noteSec = 0.05;
-  playTone(C5, 5, 20, 25, 0.08, 0);
-  playTone(E5, 5, 20, 25, 0.08, noteSec);
-  playTone(G5, 5, 20, 25, 0.08, noteSec * 2);
+  playTone(C5, 5, 25, 30, 0.30, 0);
+  playTone(E5, 5, 25, 30, 0.30, noteSec);
+  playTone(G5, 5, 25, 30, 0.30, noteSec * 2);
 }
 
 /**
@@ -159,9 +159,23 @@ export function isSoundsEnabled() {
 }
 
 /**
- * Ensure AudioContext is created (call from a user gesture).
- * Useful for iOS which requires user interaction to create AudioContext.
+ * Ensure AudioContext is created and resumed (call from a user gesture).
+ * On iOS, AudioContext MUST be created/resumed during a user gesture.
  */
 export function ensureContext() {
-  getCtx();
+  const ctx = getCtx();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+  }
+  // iOS workaround: play a silent tone to fully unlock the audio pipeline
+  if (ctx && !ensureContext._unlocked) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    gain.gain.value = 0; // silent
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.001);
+    ensureContext._unlocked = true;
+  }
 }
