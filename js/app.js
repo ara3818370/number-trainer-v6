@@ -106,12 +106,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 10. Register service worker
   registerSW();
 
-  // 11. Decide first screen
+  // 11. Decide first screen (no onboarding — straight to menu after lang select)
   if (isFirstLaunch) {
     showScreen('lang-select');
-  } else if (shouldShowOnboarding()) {
-    showScreen('onboarding');
-    startOnboarding();
   } else {
     showScreen('menu');
     renderCategoryMenu();
@@ -162,12 +159,7 @@ function wireLangSelect() {
     setLearnLang(lang);
     applyTranslations();
 
-    if (shouldShowOnboarding()) {
-      showScreen('onboarding');
-      startOnboarding();
-    } else {
-      showScreen('menu');
-    }
+    showScreen('menu');
   });
 }
 
