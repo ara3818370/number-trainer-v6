@@ -94,9 +94,6 @@ const TRANSLATIONS = {
   'summary.again_category':  { en: 'Again: {category}', de: 'Nochmal: {category}', uk: 'Ще раз: {category}' },
   'summary.all_categories':  { en: 'All Categories', de: 'Alle Kategorien', uk: 'Усі категорії' },
 
-  // ── Replay ──────────────────────────────────────────────────────────────
-  'replay.aria':             { en: 'Replay question audio', de: 'Frage erneut abspielen', uk: 'Повторити аудіо запитання' },
-
   // ── Streak ──────────────────────────────────────────────────────────────
   'streak.counter':          { en: '{n} 🔥', de: '{n} 🔥', uk: '{n} 🔥' },
 
