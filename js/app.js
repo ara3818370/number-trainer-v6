@@ -10,6 +10,7 @@ import { shouldShowOnboarding, runOnboarding, handleOnboardingAnswer } from './o
 import { CATEGORY_META } from './categories.js';
 import * as game from './game.js';
 import * as tts from './tts.js';
+const { speakReinforcement } = tts;
 import * as sound from './sound.js';
 import * as haptics from './haptics.js';
 
@@ -483,13 +484,13 @@ async function handleAnswer(selectedDisplay, buttonIndex, options, target) {
     handleStreakEffects(result.streak);
 
     if (getSetting('mode') !== 'reading') {
-      // Wait for reinforcement delay, then speak AND wait for it to finish
+      // Wait, then speak reinforcement AND wait for it to FULLY finish
       await delay(TTS_REINFORCE_DELAY_MS);
       try {
-        await tts.speak(target.ttsText, getSetting('speed'));
+        await speakReinforcement(target.ttsText);
       } catch { /* TTS failed, continue */ }
-      // Short pause after reinforcement before next round
-      await delay(400);
+      // Pause after reinforcement completes before next round
+      await delay(500);
     } else {
       await delay(CORRECT_HOLD_MS);
     }
@@ -509,8 +510,9 @@ async function handleAnswer(selectedDisplay, buttonIndex, options, target) {
     if (buttons[result.correctIndex]) buttons[result.correctIndex].classList.add('reveal-correct');
 
     if (getSetting('mode') !== 'reading') {
+      // Speak correct answer and wait for it to FULLY finish
       try {
-        await tts.speak(target.ttsText, getSetting('speed'));
+        await speakReinforcement(target.ttsText);
       } catch { /* TTS failed */ }
       await delay(600);
     } else {
