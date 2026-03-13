@@ -344,13 +344,25 @@ export function roomBusToWords(type, number) {
 
 /**
  * Convert a sports score to spoken English words.
- * Uses "nil" for zero (British football context).
+ * Uses "nil" for zero in football, "love" in tennis.
  * E.g. (5, 0) -> "five nil", (3, 3) -> "three all"
+ * Tennis: (30, 0) -> "thirty love", (40, 40) -> "deuce"
  * @param {number} home
  * @param {number} away
+ * @param {string} [sport='football'] - 'football' or 'tennis'
  * @returns {string}
  */
-export function scoreToWords(home, away) {
+export function scoreToWords(home, away, sport = 'football') {
+  if (sport === 'tennis') {
+    if (home === 40 && away === 40) return 'deuce';
+    const tennisWord = (n) => {
+      if (n === 0) return 'love';
+      return cardinalToWords(n);
+    };
+    return tennisWord(home) + ' ' + tennisWord(away);
+  }
+
+  // Football
   if (home === away) {
     if (home === 0) return 'nil nil';
     return cardinalToWords(home) + ' all';
