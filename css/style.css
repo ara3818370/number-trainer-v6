@@ -498,11 +498,12 @@ button {
 
 .training-area {
   flex: 1;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
   padding-bottom: 24px;
+  overflow: hidden;
 }
 
 /* ── Play Button ───────────────────────────────────────────────────────────── */
@@ -517,15 +518,19 @@ button {
   align-items: center;
   justify-content: center;
   color: #fff;
-  margin: auto auto 24px;
+  /* Fixed position: always 28% from top of training area */
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   cursor: pointer;
   transition: transform 0.15s ease, background-color 0.15s ease;
   box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
-  flex-shrink: 0;
+  z-index: 1;
 }
 
 .play-button:active {
-  transform: scale(0.92);
+  transform: translate(-50%, -50%) scale(0.92);
   background: var(--color-primary-hover);
 }
 
@@ -562,9 +567,9 @@ button {
 
 /* Pulse on new question */
 @keyframes pulse-once {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.06); }
-  100% { transform: scale(1); }
+  0%   { transform: translate(-50%, -50%) scale(1); }
+  50%  { transform: translate(-50%, -50%) scale(1.06); }
+  100% { transform: translate(-50%, -50%) scale(1); }
 }
 
 .play-button.pulse { animation: pulse-once 0.6s var(--ease-default); }
@@ -575,14 +580,18 @@ button {
 /* ── Reading Card ──────────────────────────────────────────────────────────── */
 
 .reading-card {
-  width: 100%;
+  /* Fixed position matching play-button zone */
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 40px);
   padding: 32px 20px;
-  margin: 20px 0 24px;
   background: var(--color-bg);
   border: 1.5px solid var(--color-border);
   border-radius: 16px;
   text-align: center;
-  flex-shrink: 0;
+  z-index: 1;
 }
 
 .reading-card.hidden { display: none; }
@@ -608,11 +617,13 @@ button {
   border-radius: 50%;
   color: var(--color-primary);
   cursor: pointer;
-  margin: 8px auto 12px;
+  margin: 0 auto 8px;
   padding: 0;
   transition: opacity 150ms ease, visibility 150ms ease, transform 100ms ease-out;
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
+  /* Push replay + options to bottom of training area */
+  margin-top: auto;
 }
 
 .replay-button svg {
@@ -658,8 +669,7 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-top: auto;
-  margin-bottom: 16px;
+  margin: 0 0 16px;
   width: 100%;
 }
 
@@ -1073,9 +1083,9 @@ button {
    ══════════════════════════════════════════════════════════════════════════════ */
 
 @keyframes audioPlay {
-  0%  { transform: scale(1); }
-  15% { transform: scale(1.08); }
-  100% { transform: scale(1); }
+  0%  { transform: translate(-50%, -50%) scale(1); }
+  15% { transform: translate(-50%, -50%) scale(1.08); }
+  100% { transform: translate(-50%, -50%) scale(1); }
 }
 
 @keyframes shake {
@@ -1096,9 +1106,9 @@ button {
 }
 
 @keyframes bloom {
-  0%   { transform: scale(1); filter: brightness(1); }
-  50%  { transform: scale(1.15); filter: brightness(1.2); }
-  100% { transform: scale(1); filter: brightness(1); }
+  0%   { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
+  50%  { transform: translate(-50%, -50%) scale(1.15); filter: brightness(1.2); }
+  100% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
 }
 
 @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
