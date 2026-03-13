@@ -644,8 +644,10 @@ function enforceLastDigitConstraint(target, confusers, confuserFn) {
   if (sameLD >= 2) return confusers;
 
   const allCandidates = confuserFn(target);
+  // Find a candidate with matching last digit that isn't a duplicate of ANY existing option
+  const existingDisplays = new Set(all.map(o => o.display));
   const matchingLD = allCandidates.filter(c =>
-    c.lastDigit === targetLD && isUnique(c, all)
+    c.lastDigit === targetLD && !existingDisplays.has(c.display)
   );
 
   if (matchingLD.length > 0) {
@@ -695,7 +697,23 @@ export function generateConfusers(target) {
   }
 
   if (result.length === 3) {
-    return enforceLastDigitConstraint(target, result, confuserFn);
+    const enforced = enforceLastDigitConstraint(target, result, confuserFn);
+    // Final dedup guard — no duplicate displays allowed
+    const finalSeen = new Set([target.display]);
+    const deduped = [];
+    for (const c of enforced) {
+      if (!finalSeen.has(c.display)) {
+        finalSeen.add(c.display);
+        deduped.push(c);
+      }
+    }
+    // Fill any gaps from dedup
+    while (deduped.length < 3) {
+      const fb = createEmergencyFallback(target, finalSeen);
+      if (fb) { finalSeen.add(fb.display); deduped.push(fb); }
+      else break;
+    }
+    return deduped;
   }
 
   return result;
