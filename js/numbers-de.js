@@ -430,7 +430,19 @@ export function roomBusToWords(type, number) {
  * @param {number} away
  * @returns {string}
  */
-export function scoreToWords(home, away) {
+/**
+ * Convert a sports score to spoken German words.
+ * Football: "fünf zu null". Tennis: "dreißig null" (love = null in German tennis).
+ * @param {number} home
+ * @param {number} away
+ * @param {string} [sport='football']
+ * @returns {string}
+ */
+export function scoreToWords(home, away, sport = 'football') {
+  if (sport === 'tennis') {
+    if (home === 40 && away === 40) return 'Einstand';
+    return cardinalToWords(home, true) + ' ' + cardinalToWords(away, true);
+  }
   const homeWord = cardinalToWords(home, true);
   const awayWord = cardinalToWords(away, true);
   return homeWord + ' zu ' + awayWord;
