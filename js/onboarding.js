@@ -64,16 +64,17 @@ export function runOnboarding(callbacks) {
      * Async — completes when the entire flow is done.
      */
     async start() {
-      // 1. Brief pause, then play audio
-      await delay(1000);
-      await callbacks.onPlay(q.ttsText);
-
-      // 2. Contemplation pause (600ms) then show 2 options
-      await delay(600);
+      // 1. Show options first (iOS requires user gesture for audio)
+      await delay(500);
       callbacks.onShowOptions(options, correctIndex);
 
+      // 2. Brief pause then play audio
+      // On iOS, TTS may be blocked here (no direct user gesture).
+      // That's OK — user sees the options and taps the circle to replay.
+      await delay(300);
+      await callbacks.onPlay(q.ttsText);
+
       // 3. Wait for user to tap — callbacks.onResult handles this
-      // The app.js wires the option click to call handleOnboardingAnswer
     },
   };
 }
