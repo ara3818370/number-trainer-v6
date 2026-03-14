@@ -163,35 +163,63 @@ export function cardinalToWords(n, standalone = true) {
 // ── Ordinals ───────────────────────────────────────────────────────────────
 
 /**
- * Convert a number to its German ordinal word form WITH article.
- * Rules: 1-19 add "-te", 20+ add "-ste", with irregulars.
- * FIX MAJOR-1: Added "der" prefix (matches English "the first" pattern).
- * E.g. 1→"der erste", 2→"der zweite", 3→"der dritte", 20→"der zwanzigste"
- * @param {number} n - Number 1-100+
+ * Get the ordinal stem for a number (without declension ending).
+ * E.g. 1→"erst", 2→"zweit", 3→"dritt", 20→"zwanzigst", 101→"einhunderterst"
+ * @param {number} n
  * @returns {string}
  */
-export function ordinalToWords(n) {
-  if (n <= 0) return 'der nullte';
+function getOrdinalStem(n) {
+  if (n <= 0) return 'nullt';
 
-  // Check irregulars first (only apply to the last portion)
   if (n < 20) {
-    if (ORDINAL_IRREGULAR[n]) return 'der ' + ORDINAL_IRREGULAR[n];
-    return 'der ' + ONES[n] + 'te';
+    if (n === 1) return 'erst';
+    if (n === 3) return 'dritt';
+    if (n === 7) return 'siebt';
+    if (n === 8) return 'acht';
+    return ONES[n] + 't';
   }
 
   if (n < 100) {
     const t = Math.floor(n / 10);
     const o = n % 10;
-    if (o === 0) return 'der ' + TENS[t] + 'ste';
-    // Compound ordinal: der einundzwanzigste
+    if (o === 0) return TENS[t] + 'st';
     const unitPart = ONES_COMPOUND[o];
-    return 'der ' + unitPart + 'und' + TENS[t] + 'ste';
+    return unitPart + 'und' + TENS[t] + 'st';
   }
 
-  if (n === 100) return 'der hundertste';
+  // For 100+: cardinal(hundreds) + ordinal stem(remainder)
+  const remainder = n % 100;
+  if (remainder === 0) {
+    return cardinalToWords(n, false) + 'st';
+  }
+  const hundredsPart = cardinalToWords(n - remainder, false);
+  return hundredsPart + getOrdinalStem(remainder);
+}
 
-  // For 101+, build cardinal base + "ste"
-  return 'der ' + cardinalToWords(n, false) + 'ste';
+/**
+ * Convert a number to its German ordinal word form WITHOUT article.
+ * Templates provide their own articles and context.
+ *
+ * @param {number} n - Number 1-100+
+ * @param {string} [form] - Declension form:
+ *   - undefined/'nom': weak nominative "erste" (after der/die/das)
+ *   - 'obl': weak oblique "ersten" (after im/den/dem/unseren/meinen etc.)
+ *   - 'sm': mixed nominative masculine "erster" (after mein/sein/ihr/ein)
+ *   - 'sn': mixed nominative neuter "erstes" (after mein/sein/ihr/ein neut.)
+ *   - 'pm': predicative masculine "Erster" (Er wurde Erster)
+ *   - 'pf': predicative feminine "Erste" (Sie wurde Erste)
+ * @returns {string}
+ */
+export function ordinalToWords(n, form) {
+  const stem = getOrdinalStem(n);
+  switch (form) {
+    case 'obl': return stem + 'en';
+    case 'sm':  return stem + 'er';
+    case 'sn':  return stem + 'es';
+    case 'pm':  return stem.charAt(0).toUpperCase() + stem.slice(1) + 'er';
+    case 'pf':  return stem.charAt(0).toUpperCase() + stem.slice(1) + 'e';
+    default:    return stem + 'e';  // weak nominative: "erste", "zweite"
+  }
 }
 
 /**
@@ -255,8 +283,8 @@ export function yearToWords(year) {
 // ── Decades ────────────────────────────────────────────────────────────────
 
 /**
- * Convert a decade + qualifier to spoken German words.
- * E.g. (90, 'early') → "die frühen Neunziger"
+ * Convert a decade + qualifier to spoken German words (dative phrases).
+ * E.g. (90, 'early') → "in den frühen Neunzigern", (90, 'mid') → "Mitte der Neunziger"
  * @param {number} decade - 50, 60, 70, 80, 90
  * @param {string} qualifier - 'early', 'mid', 'late'
  * @returns {string}
@@ -264,8 +292,13 @@ export function yearToWords(year) {
 export function decadeToWords(decade, qualifier) {
   const decadeIndex = decade / 10;
   const decadeWord = DECADE_WORDS[decadeIndex] || (twoDigitToWords(decade, false) + 'er');
+  // Return dative prepositional phrases (most templates need dative after "in")
+  if (qualifier === 'mid') {
+    return 'Mitte der ' + decadeWord;
+  }
+  // early/late: "in den [qualifier] [decade]n" (dative plural)
   const qualifierWord = DECADE_QUALIFIERS[qualifier] || qualifier;
-  return 'die ' + qualifierWord + ' ' + decadeWord;
+  return 'in den ' + qualifierWord + ' ' + decadeWord + 'n';
 }
 
 // ── Fractions ──────────────────────────────────────────────────────────────
@@ -296,16 +329,19 @@ function getDenominatorName(den) {
  * @returns {string}
  */
 export function fractionToWords(whole, num, den) {
-  let fracPart;
-
+  // Special case: halves — "halb", "zweieinhalb", "dreieinhalb"
   if (den === 2 && num === 1) {
-    fracPart = 'ein halb';
-  } else {
-    // FIX: standalone=false → "ein Drittel" not "eins Drittel"
-    const numWord = cardinalToWords(num, false);
-    const denName = getDenominatorName(den);
-    fracPart = numWord + ' ' + denName;
+    if (whole > 0) {
+      return cardinalToWords(whole, false) + 'einhalb';
+    }
+    return 'halb';
   }
+
+  let fracPart;
+  // FIX: standalone=false → "ein Drittel" not "eins Drittel"
+  const numWord = cardinalToWords(num, false);
+  const denName = getDenominatorName(den);
+  fracPart = numWord + ' ' + denName;
 
   if (whole > 0) {
     const wholeWord = cardinalToWords(whole, true);
