@@ -41,9 +41,8 @@ const HUNDREDS = [
   'шістсот', 'сімсот', 'вісімсот', "дев'ятсот"
 ];
 
-// ── Ordinals ───────────────────────────────────────────────────────────────
+// ── Ordinals — Nominative masculine ────────────────────────────────────────
 
-// Masculine ordinals
 const ORDINAL_ONES = [
   '', 'перший', 'другий', 'третій', 'четвертий',
   "п'ятий", 'шостий', 'сьомий', 'восьмий', "дев'ятий"
@@ -62,7 +61,8 @@ const ORDINAL_HUNDREDS = [
   "п'ятисотий", 'шестисотий', 'семисотий', 'восьмисотий', "дев'ятисотий"
 ];
 
-// Feminine ordinals
+// ── Ordinals — Nominative feminine ─────────────────────────────────────────
+
 const ORDINAL_ONES_F = [
   '', 'перша', 'друга', 'третя', 'четверта',
   "п'ята", 'шоста', 'сьома', 'восьма', "дев'ята"
@@ -81,7 +81,8 @@ const ORDINAL_HUNDREDS_F = [
   "п'ятисота", 'шестисота', 'семисота', 'восьмисота', "дев'ятисота"
 ];
 
-// Neuter ordinals
+// ── Ordinals — Nominative neuter ───────────────────────────────────────────
+
 const ORDINAL_ONES_N = [
   '', 'перше', 'друге', 'третє', 'четверте',
   "п'яте", 'шосте', 'сьоме', 'восьме', "дев'яте"
@@ -100,6 +101,120 @@ const ORDINAL_HUNDREDS_N = [
   "п'ятисоте", 'шестисоте', 'семисоте', 'восьмисоте', "дев'ятисоте"
 ];
 
+// ── Ordinals — Locative masculine (на першому поверсі, у першому році) ────
+
+const ORDINAL_ONES_LOC = [
+  '', 'першому', 'другому', 'третьому', 'четвертому',
+  "п'ятому", 'шостому', 'сьомому', 'восьмому', "дев'ятому"
+];
+const ORDINAL_TEENS_LOC = [
+  'десятому', 'одинадцятому', 'дванадцятому', 'тринадцятому',
+  'чотирнадцятому', "п'ятнадцятому", 'шістнадцятому',
+  'сімнадцятому', 'вісімнадцятому', "дев'ятнадцятому"
+];
+const ORDINAL_TENS_LOC = [
+  '', '', 'двадцятому', 'тридцятому', 'сороковому', "п'ятдесятому",
+  'шістдесятому', 'сімдесятому', 'вісімдесятому', "дев'яностому"
+];
+const ORDINAL_HUNDREDS_LOC = [
+  '', 'сотому', 'двохсотому', 'трьохсотому', 'чотирьохсотому',
+  "п'ятисотому", 'шестисотому', 'семисотому', 'восьмисотому', "дев'ятисотому"
+];
+
+// ── Ordinals — Instrumental masculine (фінішував першим) ───────────────────
+
+const ORDINAL_ONES_INSTR = [
+  '', 'першим', 'другим', 'третім', 'четвертим',
+  "п'ятим", 'шостим', 'сьомим', 'восьмим', "дев'ятим"
+];
+const ORDINAL_TEENS_INSTR = [
+  'десятим', 'одинадцятим', 'дванадцятим', 'тринадцятим',
+  'чотирнадцятим', "п'ятнадцятим", 'шістнадцятим',
+  'сімнадцятим', 'вісімнадцятим', "дев'ятнадцятим"
+];
+const ORDINAL_TENS_INSTR = [
+  '', '', 'двадцятим', 'тридцятим', 'сороковим', "п'ятдесятим",
+  'шістдесятим', 'сімдесятим', 'вісімдесятим', "дев'яностим"
+];
+const ORDINAL_HUNDREDS_INSTR = [
+  '', 'сотим', 'двохсотим', 'трьохсотим', 'чотирьохсотим',
+  "п'ятисотим", 'шестисотим', 'семисотим', 'восьмисотим', "дев'ятисотим"
+];
+
+// ── Ordinals — Instrumental feminine (фінішувала першою) ───────────────────
+
+const ORDINAL_ONES_FINSTR = [
+  '', 'першою', 'другою', 'третьою', 'четвертою',
+  "п'ятою", 'шостою', 'сьомою', 'восьмою', "дев'ятою"
+];
+const ORDINAL_TEENS_FINSTR = [
+  'десятою', 'одинадцятою', 'дванадцятою', 'тринадцятою',
+  'чотирнадцятою', "п'ятнадцятою", 'шістнадцятою',
+  'сімнадцятою', 'вісімнадцятою', "дев'ятнадцятою"
+];
+const ORDINAL_TENS_FINSTR = [
+  '', '', 'двадцятою', 'тридцятою', 'сороковою', "п'ятдесятою",
+  'шістдесятою', 'сімдесятою', 'вісімдесятою', "дев'яностою"
+];
+const ORDINAL_HUNDREDS_FINSTR = [
+  '', 'сотою', 'двохсотою', 'трьохсотою', 'чотирьохсотою',
+  "п'ятисотою", 'шестисотою', 'семисотою', 'восьмисотою', "дев'ятисотою"
+];
+
+// ── Ordinals — Accusative feminine (святкуємо першу річницю) ────────────────
+
+const ORDINAL_ONES_FACC = [
+  '', 'першу', 'другу', 'третю', 'четверту',
+  "п'яту", 'шосту', 'сьому', 'восьму', "дев'яту"
+];
+const ORDINAL_TEENS_FACC = [
+  'десяту', 'одинадцяту', 'дванадцяту', 'тринадцяту',
+  'чотирнадцяту', "п'ятнадцяту", 'шістнадцяту',
+  'сімнадцяту', 'вісімнадцяту', "дев'ятнадцяту"
+];
+const ORDINAL_TENS_FACC = [
+  '', '', 'двадцяту', 'тридцяту', 'сорокову', "п'ятдесяту",
+  'шістдесяту', 'сімдесяту', 'вісімдесяту', "дев'яносту"
+];
+const ORDINAL_HUNDREDS_FACC = [
+  '', 'соту', 'двохсоту', 'трьохсоту', 'чотирьохсоту',
+  "п'ятисоту", 'шестисоту', 'семисоту', 'восьмисоту', "дев'ятисоту"
+];
+
+// ── Ordinals — Genitive masculine (з першого року) ─────────────────────────
+
+const ORDINAL_ONES_GEN = [
+  '', 'першого', 'другого', 'третього', 'четвертого',
+  "п'ятого", 'шостого', 'сьомого', 'восьмого', "дев'ятого"
+];
+const ORDINAL_TEENS_GEN = [
+  'десятого', 'одинадцятого', 'дванадцятого', 'тринадцятого',
+  'чотирнадцятого', "п'ятнадцятого", 'шістнадцятого',
+  'сімнадцятого', 'вісімнадцятого', "дев'ятнадцятого"
+];
+const ORDINAL_TENS_GEN = [
+  '', '', 'двадцятого', 'тридцятого', 'сорокового', "п'ятдесятого",
+  'шістдесятого', 'сімдесятого', 'вісімдесятого', "дев'яностого"
+];
+const ORDINAL_HUNDREDS_GEN = [
+  '', 'сотого', 'двохсотого', 'трьохсотого', 'чотирьохсотого',
+  "п'ятисотого", 'шестисотого', 'семисотого', 'восьмисотого', "дев'ятисотого"
+];
+
+// ── Thousand ordinal combining forms ───────────────────────────────────────
+
+const THOUSAND_COMBINING = {
+  1: '',
+  2: 'дво',
+  3: 'трьох',
+  4: 'чотирьох',
+  5: "п'яти",
+  6: 'шести',
+  7: 'семи',
+  8: 'восьми',
+  9: "дев'яти",
+};
+
 // ── Decade words ───────────────────────────────────────────────────────────
 
 const DECADE_ORDINAL_GENITIVE_PLURAL = {
@@ -114,6 +229,13 @@ const DECADE_QUALIFIERS = {
   early: 'початок',
   mid: 'середина',
   late: 'кінець'
+};
+
+// Decade qualifiers with embedded prepositions (locative form)
+const DECADE_QUALIFIERS_FULL = {
+  early: 'на початку',
+  mid: 'у середині',
+  late: 'наприкінці'
 };
 
 // ── Fraction denominator forms ─────────────────────────────────────────────
@@ -207,6 +329,55 @@ function decline(n, form1, form2, form5) {
   return form5;
 }
 
+/**
+ * Select ordinal tables based on gender/case parameter.
+ * @param {string} gender - 'm', 'f', 'n', 'loc', 'instr', 'finstr', 'facc', 'gen'
+ * @returns {{ones: string[], teens: string[], tens: string[], hundreds: string[]}}
+ */
+function ordinalTablesFor(gender) {
+  switch (gender) {
+    case 'f':
+      return { ones: ORDINAL_ONES_F, teens: ORDINAL_TEENS_F, tens: ORDINAL_TENS_F, hundreds: ORDINAL_HUNDREDS_F };
+    case 'n':
+      return { ones: ORDINAL_ONES_N, teens: ORDINAL_TEENS_N, tens: ORDINAL_TENS_N, hundreds: ORDINAL_HUNDREDS_N };
+    case 'loc':
+      return { ones: ORDINAL_ONES_LOC, teens: ORDINAL_TEENS_LOC, tens: ORDINAL_TENS_LOC, hundreds: ORDINAL_HUNDREDS_LOC };
+    case 'instr':
+      return { ones: ORDINAL_ONES_INSTR, teens: ORDINAL_TEENS_INSTR, tens: ORDINAL_TENS_INSTR, hundreds: ORDINAL_HUNDREDS_INSTR };
+    case 'finstr':
+      return { ones: ORDINAL_ONES_FINSTR, teens: ORDINAL_TEENS_FINSTR, tens: ORDINAL_TENS_FINSTR, hundreds: ORDINAL_HUNDREDS_FINSTR };
+    case 'facc':
+      return { ones: ORDINAL_ONES_FACC, teens: ORDINAL_TEENS_FACC, tens: ORDINAL_TENS_FACC, hundreds: ORDINAL_HUNDREDS_FACC };
+    case 'gen':
+      return { ones: ORDINAL_ONES_GEN, teens: ORDINAL_TEENS_GEN, tens: ORDINAL_TENS_GEN, hundreds: ORDINAL_HUNDREDS_GEN };
+    default: // 'm'
+      return { ones: ORDINAL_ONES, teens: ORDINAL_TEENS, tens: ORDINAL_TENS, hundreds: ORDINAL_HUNDREDS };
+  }
+}
+
+/**
+ * Build a thousand ordinal using combining forms.
+ * E.g. thousandOrdinal(2, 'm') → "двотисячний", thousandOrdinal(2, 'loc') → "двотисячному"
+ * @param {number} th - Number of thousands (1-9)
+ * @param {string} gender - Gender/case
+ * @returns {string}
+ */
+function thousandOrdinal(th, gender) {
+  const prefix = THOUSAND_COMBINING[th] !== undefined ? THOUSAND_COMBINING[th] : threeDigitToWords(th, MASCULINE);
+  let suffix;
+  switch (gender) {
+    case 'f': suffix = 'тисячна'; break;
+    case 'n': suffix = 'тисячне'; break;
+    case 'loc': suffix = 'тисячному'; break;
+    case 'instr': suffix = 'тисячним'; break;
+    case 'finstr': suffix = 'тисячною'; break;
+    case 'facc': suffix = 'тисячну'; break;
+    case 'gen': suffix = 'тисячного'; break;
+    default: suffix = 'тисячний'; break;
+  }
+  return prefix + suffix;
+}
+
 // ── Cardinals ──────────────────────────────────────────────────────────────
 
 /**
@@ -251,24 +422,23 @@ export function cardinalToWords(n, gender = MASCULINE) {
 // ── Ordinals ───────────────────────────────────────────────────────────────
 
 /**
- * Convert a number to its Ukrainian ordinal word form.
- * For compound ordinals (21-99), the last part is ordinal, the rest is cardinal.
- * @param {number} n - Number 1-1000+
- * @returns {string}
- */
-/**
  * Convert ordinal number to Ukrainian words.
+ * Supports gender/case: 'm' (nom masc), 'f' (nom fem), 'n' (nom neuter),
+ * 'loc' (locative masc), 'instr' (instrumental masc), 'finstr' (instrumental fem),
+ * 'facc' (accusative fem), 'gen' (genitive masc).
+ * For compound ordinals (21-99), the last part is ordinal, the rest is cardinal.
  * @param {number} n
- * @param {string} [gender='m'] — 'm' (masculine), 'f' (feminine), 'n' (neuter)
+ * @param {string} [gender='m']
  * @returns {string}
  */
 export function ordinalToWords(n, gender = MASCULINE) {
-  const ones = gender === FEMININE ? ORDINAL_ONES_F : gender === NEUTER ? ORDINAL_ONES_N : ORDINAL_ONES;
-  const teens = gender === FEMININE ? ORDINAL_TEENS_F : gender === NEUTER ? ORDINAL_TEENS_N : ORDINAL_TEENS;
-  const tens = gender === FEMININE ? ORDINAL_TENS_F : gender === NEUTER ? ORDINAL_TENS_N : ORDINAL_TENS;
-  const hundreds = gender === FEMININE ? ORDINAL_HUNDREDS_F : gender === NEUTER ? ORDINAL_HUNDREDS_N : ORDINAL_HUNDREDS;
+  const { ones, teens, tens, hundreds } = ordinalTablesFor(gender);
 
-  if (n <= 0) return gender === FEMININE ? 'нульова' : gender === NEUTER ? 'нульове' : 'нульовий';
+  if (n <= 0) {
+    if (gender === 'f') return 'нульова';
+    if (gender === 'n') return 'нульове';
+    return 'нульовий';
+  }
 
   if (n < 10) return ones[n];
   if (n >= 10 && n <= 19) return teens[n - 10];
@@ -291,11 +461,10 @@ export function ordinalToWords(n, gender = MASCULINE) {
     const th = Math.floor(n / 1000);
     const rem = n % 1000;
     if (rem === 0) {
-      const suffix = gender === FEMININE ? 'тисячна' : gender === NEUTER ? 'тисячне' : 'тисячний';
-      if (th === 1) return suffix;
-      return threeDigitToWords(th, MASCULINE) + suffix;
+      return thousandOrdinal(th, gender);
     }
-    const thousandPart = threeDigitToWords(th, FEMININE) + ' ' + decline(th, 'тисяча', 'тисячі', 'тисяч');
+    const thousandPart = th === 1 ? 'тисяча' :
+      threeDigitToWords(th, FEMININE) + ' ' + decline(th, 'тисяча', 'тисячі', 'тисяч');
     return thousandPart + ' ' + ordinalToWords(rem, gender);
   }
 
@@ -306,40 +475,59 @@ export function ordinalToWords(n, gender = MASCULINE) {
  * Ukrainian ordinal display suffix.
  * In Ukrainian, ordinals are written as "1-й", "2-й", "3-й" etc.
  * @param {number} _n
+ * @param {string} [gender='m']
  * @returns {string}
  */
-/**
- * @param {number} _n
- * @param {string} [gender='m']
- */
 export function ordinalSuffix(_n, gender = MASCULINE) {
-  return gender === FEMININE ? '-а' : gender === NEUTER ? '-е' : '-й';
+  return gender === FEMININE || gender === 'f' ? '-а' : gender === NEUTER || gender === 'n' ? '-е' : '-й';
 }
 
 // ── Years ──────────────────────────────────────────────────────────────────
 
 /**
  * Convert a year (1000-2099) to spoken Ukrainian words.
- * Uses cardinal pronunciation common in speech.
- * E.g. 1987→"тисяча дев'ятсот вісімдесят сім"
- *      2024→"дві тисячі двадцять чотири"
- *      2000→"дві тисячі"
- *      1900→"тисяча дев'ятсот"
+ * Uses ORDINAL form as required by Ukrainian grammar.
+ * Only the LAST component becomes ordinal; preceding parts stay cardinal.
+ * E.g. 1987→"тисяча дев'ятсот вісімдесят сьомий"
+ *      2024→"дві тисячі двадцять четвертий"
+ *      2000→"двотисячний"
+ *      1900→"тисяча дев'ятсотий"
  * @param {number} year
+ * @param {string} [genderCase='m'] — 'm' (nom), 'loc', 'gen', etc.
  * @returns {string}
  */
-export function yearToWords(year) {
-  // Use cardinal form for years (common in spoken Ukrainian)
-  // Drop "одна" before "тисяча" — in spoken Ukrainian years it's just "тисяча"
-  const result = cardinalToWords(year, MASCULINE);
-  return result.replace(/^одна тисяча/, 'тисяча');
+export function yearToWords(year, genderCase = MASCULINE) {
+  // Round thousands: special combining ordinal
+  if (year % 1000 === 0) {
+    const th = Math.floor(year / 1000);
+    return thousandOrdinal(th, genderCase);
+  }
+
+  const parts = [];
+  const th = Math.floor(year / 1000);
+  const rem = year % 1000;
+
+  // Thousands part stays cardinal
+  if (th === 1) {
+    parts.push('тисяча');
+  } else if (th > 1) {
+    parts.push(threeDigitToWords(th, FEMININE) + ' ' + decline(th, 'тисяча', 'тисячі', 'тисяч'));
+  }
+
+  // Remainder becomes ordinal in the requested case
+  parts.push(ordinalToWords(rem, genderCase));
+
+  return parts.join(' ');
 }
 
 // ── Decades ────────────────────────────────────────────────────────────────
 
 /**
  * Convert a decade + qualifier to spoken Ukrainian words.
- * E.g. (90, 'early') → "початок дев'яностих"
+ * Preposition is embedded in the output:
+ * (90, 'early') → "на початку дев'яностих"
+ * (60, 'mid')   → "у середині шістдесятих"
+ * (70, 'late')  → "наприкінці сімдесятих"
  * @param {number} decade - 50, 60, 70, 80, 90
  * @param {string} qualifier - 'early', 'mid', 'late'
  * @returns {string}
@@ -347,8 +535,8 @@ export function yearToWords(year) {
 export function decadeToWords(decade, qualifier) {
   const decadeIndex = decade / 10;
   const decadeWord = DECADE_ORDINAL_GENITIVE_PLURAL[decadeIndex] || (twoDigitToWords(decade, MASCULINE) + 'их');
-  const qualifierWord = DECADE_QUALIFIERS[qualifier] || qualifier;
-  return qualifierWord + ' ' + decadeWord;
+  const qualifierPhrase = DECADE_QUALIFIERS_FULL[qualifier] || DECADE_QUALIFIERS[qualifier] || qualifier;
+  return qualifierPhrase + ' ' + decadeWord;
 }
 
 // ── Fractions ──────────────────────────────────────────────────────────────
@@ -356,7 +544,7 @@ export function decadeToWords(decade, qualifier) {
 /**
  * Convert a fraction to spoken Ukrainian words (mathematical style).
  * E.g. (0, 1, 2) → "одна друга", (0, 2, 3) → "дві третіх"
- *      (2, 3, 4) → "дві цілих три четвертих"
+ *      (2, 3, 4) → "дві цілі три четвертих"
  * @param {number} whole - Whole number part (0 if none)
  * @param {number} num - Numerator
  * @param {number} den - Denominator
@@ -364,9 +552,9 @@ export function decadeToWords(decade, qualifier) {
  */
 export function fractionToWords(whole, num, den) {
   if (whole > 0) {
-    // "ціла" (1), "цілих" (0, 2+)
+    // "ціла" (1), "цілі" (2-4), "цілих" (5+)
     const wholeWord = cardinalToWords(whole, FEMININE);
-    const wholeDecl = decline(whole, 'ціла', 'цілих', 'цілих');
+    const wholeDecl = decline(whole, 'ціла', 'цілі', 'цілих');
     const fracPart = fractionPartToWords(num, den);
     return wholeWord + ' ' + wholeDecl + ' ' + fracPart;
   }
@@ -433,7 +621,7 @@ export function decimalToWords(n) {
 
   // Integer part — feminine because "ціла" is feminine
   const intWord = intPart === 0 ? 'нуль' : cardinalToWords(intPart, FEMININE);
-  const wholeDecl = decline(intPart, 'ціла', 'цілих', 'цілих');
+  const wholeDecl = decline(intPart, 'ціла', 'цілі', 'цілих');
 
   if (fracNum === 0) {
     return intWord + ' ' + wholeDecl;
@@ -546,13 +734,6 @@ export function roomBusToWords(type, number) {
 
 // ── Sports Scores ──────────────────────────────────────────────────────────
 
-/**
- * Convert a sports score to spoken Ukrainian words.
- * E.g. (5, 0) → "п'ять нуль", (2, 2) → "два два"
- * @param {number} home
- * @param {number} away
- * @returns {string}
- */
 /**
  * Convert a sports score to spoken Ukrainian words.
  * Football: "п'ять нуль". Tennis: "тридцять нуль".
