@@ -24,14 +24,6 @@ const TENS = [
   'sechzig', 'siebzig', 'achtzig', 'neunzig'
 ];
 
-/** @type {Object<number, string>} Irregular ordinals */
-const ORDINAL_IRREGULAR = {
-  1: 'erste',
-  3: 'dritte',
-  7: 'siebte',
-  8: 'achte',
-};
-
 /** @type {Object<number, string>} Decade words for "die Neunziger" etc. */
 const DECADE_WORDS = {
   5: 'Fünfziger',
