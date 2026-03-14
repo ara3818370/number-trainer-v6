@@ -79,6 +79,10 @@ export function cardinalToWords(n) {
     const thousands = Math.floor(n / 1000);
     result += cardinalToWords(thousands) + ' thousand ';
     n = n % 1000;
+    // British English: "and" after thousands when remainder < 100 (no hundreds)
+    if (n > 0 && n < 100) {
+      result += 'and ';
+    }
   }
 
   if (n >= 100) {
@@ -114,36 +118,36 @@ export function ordinalSuffix(n) {
 
 /**
  * Convert a number to its ordinal word form.
- * E.g. 1 -> "the first", 42 -> "the forty-second", 100 -> "the one hundredth"
+ * E.g. 1 -> "first", 42 -> "forty-second", 100 -> "one hundredth"
  * @param {number} n - Number 1-100
  * @returns {string}
  */
 export function ordinalToWords(n) {
-  if (n <= 0) return 'the zeroth';
+  if (n <= 0) return 'zeroth';
 
   // Handle 1-19 directly
   if (n < 20) {
-    return 'the ' + ORDINAL_ONES[n];
+    return ORDINAL_ONES[n];
   }
 
   // Handle exact tens: 20, 30, ... 90
   if (n < 100 && n % 10 === 0) {
-    return 'the ' + ORDINAL_TENS[n / 10];
+    return ORDINAL_TENS[n / 10];
   }
 
   // Handle 21-99 compounds
   if (n < 100) {
     const t = Math.floor(n / 10);
     const o = n % 10;
-    return 'the ' + TENS[t] + '-' + ORDINAL_ONES[o];
+    return TENS[t] + '-' + ORDINAL_ONES[o];
   }
 
   // Handle 100
   if (n === 100) {
-    return 'the one hundredth';
+    return 'one hundredth';
   }
 
-  return 'the ' + cardinalToWords(n) + 'th';
+  return cardinalToWords(n) + 'th';
 }
 
 // ── Years ──────────────────────────────────────────────────────────────────
@@ -229,7 +233,8 @@ export function decimalToWords(n) {
   const str = n.toFixed(2);
   const parts = str.split('.');
   const intPart = parseInt(parts[0], 10);
-  const fracStr = parts[1];
+  // Strip trailing zeros from fractional part
+  const fracStr = parts[1].replace(/0+$/, '');
 
   // Integer part
   const intWord = intPart === 0 ? 'nought' : cardinalToWords(intPart);
@@ -390,11 +395,7 @@ export function temperatureToWords(temp) {
 
   const degreeWord = Math.abs(temp) === 1 ? 'degree' : 'degrees';
 
-  // Only add "Celsius" for negative or zero to emphasize scale
-  if (temp <= 0) {
-    return prefix + absWord + ' ' + degreeWord + ' Celsius';
-  }
-  return prefix + absWord + ' ' + degreeWord;
+  return prefix + absWord + ' ' + degreeWord + ' Celsius';
 }
 
 // ── Large Numbers (reuse cardinalToWords) ──────────────────────────────────
