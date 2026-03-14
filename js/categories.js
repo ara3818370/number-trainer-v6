@@ -21,9 +21,8 @@ export const ALL_CATEGORIES = [
  */
 export const CATEGORY_GROUPS = [
   { id: 'basic', labelKey: 'group.basic', categories: ['cardinals', 'ordinals'] },
-  { id: 'context', labelKey: 'group.context', categories: ['years', 'fractions', 'decimals', 'percentages', 'large'] },
+  { id: 'context', labelKey: 'group.context', categories: ['years', 'fractions', 'decimals', 'percentages', 'large', 'mixed'] },
   { id: 'realworld', labelKey: 'group.realworld', categories: ['currencies', 'roomBus', 'sports', 'temperatures'] },
-  { id: 'challenge', labelKey: 'group.challenge', categories: ['mixed'] },
 ];
 
 /**
