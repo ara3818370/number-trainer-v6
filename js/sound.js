@@ -13,6 +13,9 @@ let audioCtx = null;
 /** @type {boolean} */
 let enabled = true;
 
+/** @type {boolean} Whether audio pipeline has been unlocked on iOS */
+let audioUnlocked = false;
+
 // ── Preferences ────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'nlt-sounds';
@@ -93,12 +96,19 @@ function playTone(freq, attackMs, sustainMs, releaseMs, volume, startOffset = 0)
   osc.stop(now + totalDuration + 0.01);
 }
 
-// ── Note frequencies ───────────────────────────────────────────────────────
+// ── Audio constants ────────────────────────────────────────────────────────
 
+// Note frequencies (Hz)
 const C5 = 523.25;
 const E5 = 659.25;
 const G5 = 783.99;
 const A3 = 220;
+
+// Gain levels
+const GAIN_CORRECT = 0.45;
+const GAIN_WRONG = 0.35;
+const GAIN_COMPLETE = 0.40;
+const GAIN_STREAK = 0.30;
 
 // ── Public API ─────────────────────────────────────────────────────────────
 
@@ -107,7 +117,7 @@ const A3 = 220;
  */
 export function playCorrect() {
   if (!enabled) return;
-  playTone(C5, 10, 60, 180, 0.45);
+  playTone(C5, 10, 60, 180, GAIN_CORRECT);
 }
 
 /**
@@ -115,7 +125,7 @@ export function playCorrect() {
  */
 export function playWrong() {
   if (!enabled) return;
-  playTone(A3, 10, 100, 150, 0.35);
+  playTone(A3, 10, 100, 150, GAIN_WRONG);
 }
 
 /**
@@ -125,9 +135,9 @@ export function playComplete() {
   if (!enabled) return;
   const noteDur = 100;
   const gapSec = 0.1;
-  playTone(C5, 10, 50, 60, 0.40, 0);
-  playTone(E5, 10, 50, 60, 0.40, (noteDur / 1000) + gapSec);
-  playTone(G5, 10, 50, 60, 0.40, ((noteDur / 1000) + gapSec) * 2);
+  playTone(C5, 10, 50, 60, GAIN_COMPLETE, 0);
+  playTone(E5, 10, 50, 60, GAIN_COMPLETE, (noteDur / 1000) + gapSec);
+  playTone(G5, 10, 50, 60, GAIN_COMPLETE, ((noteDur / 1000) + gapSec) * 2);
 }
 
 /**
@@ -136,9 +146,9 @@ export function playComplete() {
 export function playStreak() {
   if (!enabled) return;
   const noteSec = 0.05;
-  playTone(C5, 5, 25, 30, 0.30, 0);
-  playTone(E5, 5, 25, 30, 0.30, noteSec);
-  playTone(G5, 5, 25, 30, 0.30, noteSec * 2);
+  playTone(C5, 5, 25, 30, GAIN_STREAK, 0);
+  playTone(E5, 5, 25, 30, GAIN_STREAK, noteSec);
+  playTone(G5, 5, 25, 30, GAIN_STREAK, noteSec * 2);
 }
 
 /**
@@ -168,7 +178,7 @@ export function ensureContext() {
     ctx.resume().catch(() => {});
   }
   // iOS workaround: play a silent tone to fully unlock the audio pipeline
-  if (ctx && !ensureContext._unlocked) {
+  if (ctx && !audioUnlocked) {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     gain.gain.value = 0; // silent
@@ -176,6 +186,6 @@ export function ensureContext() {
     gain.connect(ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + 0.001);
-    ensureContext._unlocked = true;
+    audioUnlocked = true;
   }
 }
