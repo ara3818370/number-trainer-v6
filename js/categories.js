@@ -120,19 +120,19 @@ const SENTENCES = {
     cardinals: [
       "The answer is {V}.",
       "Please go to room {V}.",
-      "There are {V} students in the class.",
-      "I need {V} copies of this document.",
+      "The class has {V} {student|students}.",
+      "I need {V} {copy|copies} of this document.",
       "The bus number is {V}.",
-      "She scored {V} points on the test.",
-      "We have {V} tickets left.",
+      "She scored {V} {point|points} on the test.",
+      "We have {V} {ticket|tickets} left.",
       "Turn to page {V} in your textbook.",
-      "He ran {V} miles this morning.",
+      "He ran {V} {mile|miles} this morning.",
       "Your order number is {V}.",
-      "There are {V} chairs in the room.",
-      "She waited {V} minutes.",
-      "The building has {V} floors.",
-      "We need {V} more volunteers.",
-      "I counted {V} birds in the tree.",
+      "The room has {V} {chair|chairs}.",
+      "She waited {V} {minute|minutes}.",
+      "The building has {V} {floor|floors}.",
+      "We need {V} more {volunteer|volunteers}.",
+      "I counted {V} {bird|birds} in the tree.",
     ],
     ordinals: [
       "He finished in {V} place.",
@@ -255,7 +255,7 @@ const SENTENCES = {
     ],
     roomBus: [
       "Please go to {V}.",
-      "You need {V}.",
+      "You need to take {V}.",
       "I'm looking for {V}.",
       "Can you tell me where {V} is?",
       "Do you know where {V} is?",
@@ -326,36 +326,36 @@ const SENTENCES = {
     cardinals: [
       "Die Antwort ist {V}.",
       "Bitte gehen Sie zu Zimmer {V}.",
-      "Es gibt {V} Schüler in der Klasse.",
-      "Ich brauche {V} Kopien dieses Dokuments.",
+      "Es gibt {Vc} Schüler in der Klasse.",
+      "Ich brauche {Vc} Kopien dieses Dokuments.",
       "Die Busnummer ist {V}.",
-      "Sie hat {V} Punkte im Test erreicht.",
-      "Wir haben noch {V} Tickets übrig.",
+      "Sie hat {Vc} Punkte im Test erreicht.",
+      "Wir haben noch {Vc} Tickets übrig.",
       "Schlagen Sie Seite {V} in Ihrem Buch auf.",
-      "Er ist heute Morgen {V} Kilometer gelaufen.",
+      "Er ist heute Morgen {Vc} Kilometer gelaufen.",
       "Ihre Bestellnummer ist {V}.",
-      "Im Raum stehen {V} Stühle.",
-      "Sie hat {V} Minuten gewartet.",
-      "Das Gebäude hat {V} Stockwerke.",
-      "Wir brauchen noch {V} Freiwillige.",
-      "Ich habe {V} Vögel auf dem Baum gezählt.",
+      "Im Raum stehen {Vc} Stühle.",
+      "Sie hat {Vc} Minuten gewartet.",
+      "Das Gebäude hat {Vc} Stockwerke.",
+      "Wir brauchen noch {Vc} Freiwillige.",
+      "Ich habe {Vc} Vögel auf dem Baum gezählt.",
     ],
     ordinals: [
-      "Er wurde {V}.",
+      "Er wurde {Vpm}.",
       "Das ist das {V} Mal, dass ich frage.",
-      "Sie wohnt im {V} Stock.",
-      "Heute ist sein {V} Geburtstag.",
-      "Wir feiern unseren {V} Jahrestag.",
+      "Sie wohnt im {Vobl} Stock.",
+      "Heute ist sein {Vsm} Geburtstag.",
+      "Wir feiern unseren {Vobl} Jahrestag.",
       "Nehmen Sie die {V} Abzweigung links.",
-      "Sie wurde {V} im Rennen.",
+      "Sie wurde {Vpf} im Rennen.",
       "Das ist die {V} Ausgabe des Buches.",
       "Es ist der {V} Tag des Monats.",
       "Lesen Sie das {V} Kapitel aufmerksam.",
       "Er war die {V} Person, die ankam.",
-      "Unser Team wurde {V}.",
-      "Es war ihr {V} Versuch.",
+      "Unser Team belegte den {Vobl} Platz.",
+      "Es war ihr {Vsm} Versuch.",
       "Die {V} Frage war die schwerste.",
-      "Das ist mein {V} Besuch in dieser Stadt.",
+      "Das ist mein {Vsm} Besuch in dieser Stadt.",
     ],
     years: [
       "Sie wurde {V} geboren.",
@@ -375,24 +375,24 @@ const SENTENCES = {
       "Die Tradition begann {V}.",
     ],
     decades: [
-      "Das geschah in {V}.",
-      "Der Stil war in {V} beliebt.",
-      "Musik war in {V} anders.",
-      "Sie sind in {V} aufgewachsen.",
-      "Die Mode hat sich in {V} stark verändert.",
-      "Das war ein verbreiteter Trend in {V}.",
-      "Die Technik entwickelte sich rasant in {V}.",
-      "Viele tolle Filme entstanden in {V}.",
-      "Die Menschen kleideten sich anders in {V}.",
-      "Dieses Lied erinnert mich an {V}.",
-      "Die Wirtschaft war stark in {V}.",
-      "Autos sahen ganz anders aus in {V}.",
-      "Fernsehen war riesig in {V}.",
-      "Das Leben war einfacher in {V}.",
-      "Meine Eltern haben sich in {V} kennengelernt.",
+      "Das geschah {V}.",
+      "Der Stil war {V} beliebt.",
+      "Musik war {V} anders.",
+      "Sie sind {V} aufgewachsen.",
+      "Die Mode hat sich {V} stark verändert.",
+      "Das war {V} ein verbreiteter Trend.",
+      "Die Technik entwickelte sich {V} rasant.",
+      "Viele tolle Filme entstanden {V}.",
+      "Die Menschen kleideten sich {V} anders.",
+      "Dieses Lied war {V} ein Hit.",
+      "Die Wirtschaft war {V} stark.",
+      "Autos sahen {V} ganz anders aus.",
+      "Fernsehen war {V} riesig.",
+      "Das Leben war {V} einfacher.",
+      "Meine Eltern haben sich {V} kennengelernt.",
     ],
     fractions: [
-      "Geben Sie {V} Tasse Mehl hinzu.",
+      "Verwenden Sie {V} des Materials.",
       "Ungefähr {V} der Schüler haben bestanden.",
       "Der Tank ist {V} voll.",
       "Mischen Sie {V} der Zutaten.",
@@ -447,7 +447,7 @@ const SENTENCES = {
       "Ungefähr {V} der Menschen stimmten zu.",
       "Der Umsatz stieg um {V}.",
       "Die Luftfeuchtigkeit beträgt {V}.",
-      "Es gibt eine {V} Regenwahrscheinlichkeit.",
+      "Die Regenwahrscheinlichkeit liegt bei {V}.",
       "Das Ergebnis verbesserte sich um {V}.",
       "Der Akku ist bei {V}.",
       "Die Arbeitslosigkeit sank um {V}.",
@@ -744,12 +744,23 @@ const SENTENCES = {
  */
 function generateCardinal() {
   const n = randInt(1, 100);
+
+  // German needs standalone ("eins") vs before-noun ("ein") forms for n=1
+  let cases = null;
+  if (lang() === 'de') {
+    cases = {
+      nom: deCardinal(n, true),    // standalone: "eins" for 1
+      attr: deCardinal(n, false),  // before noun: "ein" for 1
+    };
+  }
+
   return {
     value: n,
     display: String(n),
     ttsText: cardinalToWords(n),
     lastDigit: n % 10,
     category: 'cardinals',
+    cases,
   };
 }
 
@@ -774,6 +785,14 @@ function generateOrdinal() {
       instr: ordinalToWords(n, 'instr'), // instrumental masculine (першим)
       finstr: ordinalToWords(n, 'finstr'), // instrumental feminine (першою)
       facc: ordinalToWords(n, 'facc'),  // accusative feminine (першу)
+    };
+  } else if (lang() === 'de') {
+    cases = {
+      nom: ordinalToWords(n),           // weak nominative: "erste" (after der/die/das)
+      obl: ordinalToWords(n, 'obl'),    // weak oblique: "ersten" (after im/den/dem/unseren)
+      sm: ordinalToWords(n, 'sm'),      // mixed nom. masculine: "erster" (after mein/sein/ihr)
+      pm: ordinalToWords(n, 'pm'),      // predicative masculine: "Erster" (Er wurde Erster)
+      pf: ordinalToWords(n, 'pf'),      // predicative feminine: "Erste" (Sie wurde Erste)
     };
   }
 
@@ -808,7 +827,10 @@ function formatDecadeDisplay(decade, qualifier) {
   if (lang() === 'de') {
     const qualMap = { early: 'frühen', mid: 'mittleren', late: 'späten' };
     const decNames = { 50: 'Fünfziger', 60: 'Sechziger', 70: 'Siebziger', 80: 'Achtziger', 90: 'Neunziger' };
-    return 'die ' + qualMap[qualifier] + ' ' + decNames[decade];
+    if (qualifier === 'mid') {
+      return 'Mitte der ' + decNames[decade];
+    }
+    return 'in den ' + qualMap[qualifier] + ' ' + decNames[decade] + 'n';
   }
   return 'the ' + qualifier + ' ' + decade + 's';
 }
@@ -1053,7 +1075,7 @@ function generateRoomBus() {
   } else if (lang() === 'de') {
     cases = {
       nom: (type === 'room' ? 'Raum ' : 'Bus ') + number,
-      gen: (type === 'room' ? 'Raums ' : 'Busses ') + number,
+      gen: (type === 'room' ? 'des Raums ' : 'des Busses ') + number,
       acc: (type === 'room' ? 'den Raum ' : 'den Bus ') + number,
       loc: (type === 'room' ? 'Raum ' : 'Bus ') + number,
     };
@@ -1255,13 +1277,20 @@ export function getSentence(cv) {
     template = template.replace('{V:f}', cardinalToWords(cv.value, 'f'));
   }
 
-  // FIX 5: Handle noun agreement {form1|form2|form5} for Ukrainian
+  // FIX 5: Handle noun agreement {form1|form2|form5} for Ukrainian (3 forms)
   if (lang() === 'uk' && typeof cv.value === 'number') {
     template = template.replace(/\{([^{}|]+)\|([^{}|]+)\|([^{}|]+)\}/g, (_match, f1, f2, f5) => {
       const dc = ukDeclensionCase(cv.value);
       if (dc === 1) return f1;
       if (dc === 2) return f2;
       return f5;
+    });
+  }
+
+  // English noun agreement: {singular|plural} — 2 forms
+  if (lang() === 'en' && typeof cv.value === 'number') {
+    template = template.replace(/\{([^{}|]+)\|([^{}|]+)\}/g, (_match, singular, plural) => {
+      return cv.value === 1 ? singular : plural;
     });
   }
 
@@ -1273,6 +1302,11 @@ export function getSentence(cv) {
       .replace('{Vinstr}', cv.cases.instr || cv.cases.nom || cv.ttsText)
       .replace('{Vfinstr}', cv.cases.finstr || cv.cases.f || cv.ttsText)
       .replace('{Vfacc}', cv.cases.facc || cv.cases.f || cv.ttsText)
+      .replace('{Vobl}', cv.cases.obl || cv.cases.nom || cv.ttsText)
+      .replace('{Vsm}', cv.cases.sm || cv.cases.nom || cv.ttsText)
+      .replace('{Vpm}', cv.cases.pm || cv.cases.nom || cv.ttsText)
+      .replace('{Vpf}', cv.cases.pf || cv.cases.nom || cv.ttsText)
+      .replace('{Vc}', cv.cases.attr || cv.cases.nom || cv.ttsText)
       .replace('{Vg}', cv.cases.gen || cv.cases.nom || cv.ttsText)
       .replace('{Va}', cv.cases.acc || cv.cases.nom || cv.ttsText)
       .replace('{Vl}', cv.cases.loc || cv.cases.nom || cv.ttsText)
