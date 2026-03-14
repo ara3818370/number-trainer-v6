@@ -267,7 +267,7 @@ function renderCategoryMenu() {
     if (!meta) continue;
 
     const isMastered = mastered.includes(catId);
-    const isMixed = catId === 'mixed';
+    const isMixed = false;
 
     const card = document.createElement('button');
     card.className = 'category-card' + (isMixed ? ' category-card--mixed' : '');
