@@ -233,8 +233,8 @@ export function decimalToWords(n) {
   const str = n.toFixed(2);
   const parts = str.split('.');
   const intPart = parseInt(parts[0], 10);
-  // Strip trailing zeros from fractional part
-  const fracStr = parts[1].replace(/0+$/, '');
+  // Keep all digits — don't strip trailing zeros (display shows "0.10", TTS should match)
+  const fracStr = parts[1];
 
   // Integer part
   const intWord = intPart === 0 ? 'nought' : cardinalToWords(intPart);
