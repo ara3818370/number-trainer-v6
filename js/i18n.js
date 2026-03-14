@@ -42,8 +42,6 @@ const TRANSLATIONS = {
   'cat.sports.desc':        { en: '5:0, 2:1', de: '5:0, 2:1', uk: '5:0, 2:1' },
   'cat.temperatures.label': { en: 'Temperatures', de: 'Temperaturen', uk: 'Температури' },
   'cat.temperatures.desc':  { en: '-30°C - 45°C', de: '-30°C - 45°C', uk: '-30°C - 45°C' },
-  'cat.largeNumbers.label': { en: 'Large Numbers', de: 'Große Zahlen', uk: 'Великі числа' },
-  'cat.largeNumbers.desc':  { en: '100 - 999,999', de: '100 - 999.999', uk: '100 - 999 999' },
   'cat.large.label':        { en: 'Large Numbers', de: 'Große Zahlen', uk: 'Великі числа' },
   'cat.large.desc':         { en: '100 - 999,999', de: '100 - 999.999', uk: '100 - 999 999' },
   'cat.mixed.label':        { en: 'Mixed', de: 'Gemischt', uk: 'Мікс' },
