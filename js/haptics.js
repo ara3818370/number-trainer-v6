@@ -30,6 +30,13 @@ function savePreference() {
 // Load on module init
 if (typeof localStorage !== 'undefined') loadPreference();
 
+// ── Vibration patterns ─────────────────────────────────────────────────────
+
+const PATTERN_CORRECT = 10;
+const PATTERN_WRONG = [15, 30, 15];
+const PATTERN_COMPLETE = [10, 50, 10, 50, 30];
+const PATTERN_STREAK = [5, 20, 5];
+
 // ── Internal ───────────────────────────────────────────────────────────────
 
 /**
@@ -49,28 +56,28 @@ function vibrate(pattern) {
  * Correct answer haptic: light, crisp tap.
  */
 export function hapticCorrect() {
-  vibrate(10);
+  vibrate(PATTERN_CORRECT);
 }
 
 /**
  * Wrong answer haptic: deeper, two-pulse warning.
  */
 export function hapticWrong() {
-  vibrate([15, 30, 15]);
+  vibrate(PATTERN_WRONG);
 }
 
 /**
  * Session complete haptic: celebration pattern.
  */
 export function hapticComplete() {
-  vibrate([10, 50, 10, 50, 30]);
+  vibrate(PATTERN_COMPLETE);
 }
 
 /**
  * Streak milestone haptic: quick flutter.
  */
 export function hapticStreak() {
-  vibrate([5, 20, 5]);
+  vibrate(PATTERN_STREAK);
 }
 
 /**
