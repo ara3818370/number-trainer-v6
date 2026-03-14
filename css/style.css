@@ -429,18 +429,6 @@ button {
   font-weight: 700;
 }
 
-/* Locked */
-.category-card.locked {
-  opacity: 0.4;
-  pointer-events: auto;
-}
-
-.category-lock {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  font-size: 0.625rem;
-}
 
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -664,22 +652,6 @@ button {
   will-change: width;
 }
 
-/* ── Streak Counter ────────────────────────────────────────────────────────── */
-
-.streak-counter {
-  position: fixed;
-  bottom: calc(var(--safe-bottom) + 16px);
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  opacity: 0;
-  transition: opacity 300ms ease;
-  z-index: 50;
-}
-
-.streak-counter.visible { opacity: 1; }
 
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -931,21 +903,6 @@ button {
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
-/* ── Unlock All ────────────────────────────────────────────────────────────── */
-
-.unlock-all {
-  margin-top: 4px;
-  padding-top: 12px;
-  border-top: none;
-  font-size: 0.75rem;
-  color: var(--color-bg);
-  text-align: center;
-  cursor: default;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.unlock-all:active { color: var(--color-bg); }
 
 
 /* ══════════════════════════════════════════════════════════════════════════════
