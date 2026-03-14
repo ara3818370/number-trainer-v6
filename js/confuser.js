@@ -1,61 +1,25 @@
 // confuser.js — Confuser generation v2c
-// Language-aware: uses the same language-dispatching functions from categories.js
+// Language-aware: uses shared language-dispatching wrappers from number-utils.js
 // At least 2 of 4 options (target + 3 confusers) must share the same last digit
 
 import {
-  cardinalToWords as enCardinal, ordinalToWords as enOrdinal, ordinalSuffix as enOrdinalSuffix,
-  yearToWords as enYear, decadeToWords as enDecade, fractionToWords as enFraction,
-  decimalToWords as enDecimal, currencyToWords as enCurrency,
-  percentageToWords as enPercentage, roomBusToWords as enRoomBus,
-  scoreToWords as enScore, temperatureToWords as enTemperature,
-  largeNumberToWords as enLarge
-} from './numbers-en.js';
+  lang, cardinalToWords, ordinalToWords, ordinalSuffix,
+  yearToWords, decadeToWords, fractionToWords, decimalToWords,
+  currencyToWords, percentageToWords, roomBusToWords,
+  scoreToWords, temperatureToWords, largeNumberToWords,
+  randInt, pick,
+} from './number-utils.js';
 
-import {
-  cardinalToWords as deCardinal, ordinalToWords as deOrdinal, ordinalSuffix as deOrdinalSuffix,
-  yearToWords as deYear, decadeToWords as deDecade, fractionToWords as deFraction,
-  decimalToWords as deDecimal, currencyToWords as deCurrency,
-  percentageToWords as dePercentage, roomBusToWords as deRoomBus,
-  scoreToWords as deScore, temperatureToWords as deTemperature,
-  largeNumberToWords as deLarge
-} from './numbers-de.js';
+// ── Constants ──────────────────────────────────────────────────────────────
 
-import {
-  cardinalToWords as ukCardinal, ordinalToWords as ukOrdinal, ordinalSuffix as ukOrdinalSuffix,
-  yearToWords as ukYear, decadeToWords as ukDecade, fractionToWords as ukFraction,
-  decimalToWords as ukDecimal, currencyToWords as ukCurrency,
-  percentageToWords as ukPercentage, roomBusToWords as ukRoomBus,
-  scoreToWords as ukScore, temperatureToWords as ukTemperature,
-  largeNumberToWords as ukLarge
-} from './numbers-uk.js';
-
-import { getLearnLang } from './i18n.js';
-
-// ── Language-dispatched helpers ────────────────────────────────────────────
-
-/** @returns {'en'|'de'|'uk'} */
-function lang() { return getLearnLang(); }
-
-function dispatch(enFn, deFn, ukFn, ...args) {
-  const l = lang();
-  if (l === 'uk') return ukFn(...args);
-  if (l === 'de') return deFn(...args);
-  return enFn(...args);
-}
-
-function cardinalToWords(n) { return dispatch(enCardinal, deCardinal, ukCardinal, n); }
-function ordinalToWords(n) { return dispatch(enOrdinal, deOrdinal, ukOrdinal, n); }
-function ordinalSuffix(n) { return dispatch(enOrdinalSuffix, deOrdinalSuffix, ukOrdinalSuffix, n); }
-function yearToWords(y) { return dispatch(enYear, deYear, ukYear, y); }
-function decadeToWords(d, q) { return dispatch(enDecade, deDecade, ukDecade, d, q); }
-function fractionToWords(w, n, d) { return dispatch(enFraction, deFraction, ukFraction, w, n, d); }
-function decimalToWords(n) { return dispatch(enDecimal, deDecimal, ukDecimal, n); }
-function currencyToWords(a) { return dispatch(enCurrency, deCurrency, ukCurrency, a); }
-function percentageToWords(n) { return dispatch(enPercentage, dePercentage, ukPercentage, n); }
-function roomBusToWords(t, n) { return dispatch(enRoomBus, deRoomBus, ukRoomBus, t, n); }
-function scoreToWords(h, a, sport) { return dispatch(enScore, deScore, ukScore, h, a, sport); }
-function temperatureToWords(t) { return dispatch(enTemperature, deTemperature, ukTemperature, t); }
-function largeNumberToWords(n) { return dispatch(enLarge, deLarge, ukLarge, n); }
+const EMERGENCY_FALLBACK_MAX_ATTEMPTS = 20;
+const NUM_CONFUSERS = 3;
+const TENNIS_SCORES = [0, 15, 30, 40];
+const TEMP_MIN = -30;
+const TEMP_MAX = 45;
+const FRACTION_DENOMINATORS = [2, 3, 4, 5, 6, 8, 10];
+const YEAR_MIN = 1200;
+const YEAR_MAX = 2026;
 
 // ── Display helpers for language-specific formatting ───────────────────────
 
@@ -139,16 +103,6 @@ function formatDecadeDisplay(decade, qualifier) {
     return 'die ' + (qualMap[qualifier] || qualifier) + ' ' + (decNames[decade] || decade + 'er');
   }
   return 'the ' + qualifier + ' ' + decade + 's';
-}
-
-// ── Random helpers ─────────────────────────────────────────────────────────
-
-function randInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 // ── Display equality check ─────────────────────────────────────────────────
@@ -520,8 +474,6 @@ function roomBusConfusers(target) {
 function sportsConfusers(target) {
   const { home, away, sport } = target.value;
   const candidates = [];
-  const TENNIS = [0, 15, 30, 40];
-
   const build = (h, a) => ({
     value: { home: h, away: a, sport },
     display: h + ':' + a,
@@ -533,7 +485,7 @@ function sportsConfusers(target) {
   if (sport === 'tennis') {
     // Tennis confusers: swap sides, adjacent tennis scores
     if (home !== away) candidates.push(build(away, home));
-    for (const s of TENNIS) {
+    for (const s of TENNIS_SCORES) {
       if (s !== away) candidates.push(build(home, s));
       if (s !== home) candidates.push(build(s, away));
     }
@@ -583,21 +535,21 @@ function temperatureConfusers(target) {
 
   for (const d of [1, -1, 5, -5, 10, -10]) {
     const v = temp + d;
-    if (v >= -30 && v <= 45) candidates.push(build(v));
+    if (v >= TEMP_MIN && v <= TEMP_MAX) candidates.push(build(v));
   }
 
   const absTemp = Math.abs(temp);
   const sign = temp < 0 ? -1 : 1;
   if (absTemp >= 13 && absTemp <= 19) {
     const swapped = (absTemp % 10) * 10 * sign;
-    if (swapped >= -30 && swapped <= 45) candidates.push(build(swapped));
+    if (swapped >= TEMP_MIN && swapped <= TEMP_MAX) candidates.push(build(swapped));
   }
   if (absTemp >= 20 && absTemp <= 50 && absTemp % 10 === 0) {
     const swapped = ((absTemp / 10) + 10) * sign;
-    if (swapped >= -30 && swapped <= 45) candidates.push(build(swapped));
+    if (swapped >= TEMP_MIN && swapped <= TEMP_MAX) candidates.push(build(swapped));
   }
 
-  return candidates.filter(c => c.display !== target.display && c.value >= -30 && c.value <= 45);
+  return candidates.filter(c => c.display !== target.display && c.value >= TEMP_MIN && c.value <= TEMP_MAX);
 }
 
 // ── Large number confusers ─────────────────────────────────────────────────
@@ -690,9 +642,9 @@ export function generateConfusers(target) {
     }
   }
 
-  const result = unique.slice(0, 3);
+  const result = unique.slice(0, NUM_CONFUSERS);
 
-  while (result.length < 3) {
+  while (result.length < NUM_CONFUSERS) {
     const fallback = generateFallback(target, [...result, target]);
     if (fallback && !seen.has(fallback.display)) {
       seen.add(fallback.display);
@@ -708,7 +660,7 @@ export function generateConfusers(target) {
     }
   }
 
-  if (result.length === 3) {
+  if (result.length === NUM_CONFUSERS) {
     const enforced = enforceLastDigitConstraint(target, result, confuserFn);
     // Final dedup guard — no duplicate displays allowed
     const finalSeen = new Set([target.display]);
@@ -720,7 +672,7 @@ export function generateConfusers(target) {
       }
     }
     // Fill any gaps from dedup
-    while (deduped.length < 3) {
+    while (deduped.length < NUM_CONFUSERS) {
       const fb = createEmergencyFallback(target, finalSeen);
       if (fb) { finalSeen.add(fb.display); deduped.push(fb); }
       else break;
@@ -751,7 +703,7 @@ function generateFallback(target, existing) {
           candidate = { value: v, display: String(v), ttsText: cardinalToWords(v), lastDigit: v % 10, category: cat };
           break;
         case 'temperatures':
-          if (v < -30 || v > 45) continue;
+          if (v < TEMP_MIN || v > TEMP_MAX) continue;
           candidate = { value: v, display: v + '°C', ttsText: temperatureToWords(v), lastDigit: Math.abs(v) % 10, category: cat };
           break;
         case 'large':
@@ -784,7 +736,7 @@ function generateFallback(target, existing) {
 function createEmergencyFallback(target, seenDisplays) {
   const cat = target.mixedCategory || target.category;
 
-  for (let attempts = 0; attempts < 20; attempts++) {
+  for (let attempts = 0; attempts < EMERGENCY_FALLBACK_MAX_ATTEMPTS; attempts++) {
     let candidate = null;
 
     switch (cat) {
@@ -792,9 +744,8 @@ function createEmergencyFallback(target, seenDisplays) {
         const sport = target.value.sport || 'football';
         let h, a;
         if (sport === 'tennis') {
-          const TS = [0, 15, 30, 40];
-          h = TS[randInt(0, 3)];
-          a = TS[randInt(0, 3)];
+          h = TENNIS_SCORES[randInt(0, TENNIS_SCORES.length - 1)];
+          a = TENNIS_SCORES[randInt(0, TENNIS_SCORES.length - 1)];
         } else {
           h = randInt(0, 7);
           a = randInt(0, 5);
@@ -806,7 +757,7 @@ function createEmergencyFallback(target, seenDisplays) {
         break;
       }
       case 'temperatures': {
-        const t = randInt(-30, 45);
+        const t = randInt(TEMP_MIN, TEMP_MAX);
         const display = t + '°C';
         if (!seenDisplays.has(display)) {
           candidate = { value: t, display, ttsText: temperatureToWords(t), lastDigit: Math.abs(t) % 10, category: 'temperatures' };
@@ -814,8 +765,7 @@ function createEmergencyFallback(target, seenDisplays) {
         break;
       }
       case 'fractions': {
-        const dens = [2, 3, 4, 5, 6, 8, 10];
-        const d = pick(dens);
+        const d = pick(FRACTION_DENOMINATORS);
         const n = randInt(1, d - 1);
         const displayFrac = n + '/' + d;
         if (!seenDisplays.has(displayFrac)) {
@@ -859,7 +809,7 @@ function createEmergencyFallback(target, seenDisplays) {
         break;
       }
       case 'years': {
-        const y = randInt(1200, 2026);
+        const y = randInt(YEAR_MIN, YEAR_MAX);
         const display = String(y);
         if (!seenDisplays.has(display)) {
           candidate = { value: y, display, ttsText: yearToWords(y), lastDigit: y % 10, category: 'years' };
