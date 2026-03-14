@@ -82,9 +82,6 @@ export function generateQuestion() {
   };
 }
 
-// Keep nextRound as alias for backward compatibility
-export const nextRound = generateQuestion;
-
 /**
  * Record an answer. Updates score, streak. Pure state update.
  * @param {string} selectedDisplay - The display string the user chose
@@ -117,9 +114,6 @@ export function recordAnswer(selectedDisplay) {
     total: state.total,
   };
 }
-
-// Keep submitAnswer as alias for backward compatibility
-export const submitAnswer = recordAnswer;
 
 /**
  * Check if session should end.
@@ -154,9 +148,6 @@ export function getSessionStats() {
 export function stopSession() {
   state.active = false;
 }
-
-// Alias
-export const endSession = stopSession;
 
 // ── Getters (read-only access to current state) ───────────────────────────
 
