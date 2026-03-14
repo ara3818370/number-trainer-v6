@@ -49,10 +49,12 @@ function dispatch(enFn, deFn, ukFn, ...args) {
   return enFn(...args);
 }
 
-function cardinalToWords(n) { return dispatch(enCardinal, deCardinal, ukCardinal, n); }
+// FIX 9: Pass through extra args (gender, case) for Ukrainian support
+function cardinalToWords(n, ...args) { return dispatch(enCardinal, deCardinal, ukCardinal, n, ...args); }
 function ordinalToWords(n, gender) { return dispatch(enOrdinal, deOrdinal, ukOrdinal, n, gender); }
 function ordinalSuffix(n, gender) { return dispatch(enOrdinalSuffix, deOrdinalSuffix, ukOrdinalSuffix, n, gender); }
-function yearToWords(year) { return dispatch(enYear, deYear, ukYear, year); }
+// FIX 2: Pass through case parameter for year ordinal forms
+function yearToWords(year, ...args) { return dispatch(enYear, deYear, ukYear, year, ...args); }
 function decadeToWords(decade, qualifier) { return dispatch(enDecade, deDecade, ukDecade, decade, qualifier); }
 function fractionToWords(whole, num, den) { return dispatch(enFraction, deFraction, ukFraction, whole, num, den); }
 function decimalToWords(n) { return dispatch(enDecimal, deDecimal, ukDecimal, n); }
@@ -92,6 +94,23 @@ function pick(arr) {
  */
 function gcd(a, b) {
   return b === 0 ? a : gcd(b, a % b);
+}
+
+// ── Ukrainian noun declension helper (for cardinal noun agreement) ─────────
+
+/**
+ * Determine declension case for Ukrainian number-noun agreement.
+ * @param {number} n
+ * @returns {number} 1 (singular), 2 (paucal 2-4), or 5 (plural 5+)
+ */
+function ukDeclensionCase(n) {
+  const abs = Math.abs(n);
+  const lastTwo = abs % 100;
+  const lastOne = abs % 10;
+  if (lastTwo >= 11 && lastTwo <= 19) return 5;
+  if (lastOne === 1) return 1;
+  if (lastOne >= 2 && lastOne <= 4) return 2;
+  return 5;
 }
 
 // ── Sentence templates per category (language-dependent) ───────────────────
@@ -513,70 +532,70 @@ const SENTENCES = {
     cardinals: [
       "Відповідь — {V}.",
       "Будь ласка, підійдіть до кімнати {V}.",
-      "У класі {V} учнів.",
-      "Мені потрібно {V} копій цього документа.",
+      "У класі {V} {учень|учні|учнів}.",
+      "Мені треба {V:f} {копія|копії|копій} цього документа.",
       "Номер автобуса — {V}.",
-      "Вона набрала {V} балів на тесті.",
-      "У нас залишилось {V} квитків.",
+      "Вона набрала {V} {бал|бали|балів} на тесті.",
+      "У нас є {V} {квиток|квитки|квитків}.",
       "Відкрийте сторінку {V} у підручнику.",
-      "Він пробіг {V} кілометрів вранці.",
+      "Він пробіг {V} {кілометр|кілометри|кілометрів} вранці.",
       "Ваш номер замовлення — {V}.",
-      "У кімнаті {V} стільців.",
-      "Вона чекала {V} хвилин.",
-      "У будівлі {V} поверхів.",
-      "Нам потрібно ще {V} волонтерів.",
-      "Я нарахував {V} птахів на дереві.",
+      "У кімнаті {V} {стілець|стільці|стільців}.",
+      "Час очікування — {V:f} {хвилина|хвилини|хвилин}.",
+      "У будівлі {V} {поверх|поверхи|поверхів}.",
+      "Нам треба ще {V} {волонтер|волонтери|волонтерів}.",
+      "На дереві {V} {птах|птахи|птахів}.",
     ],
     ordinals: [
-      "Він фінішував {V}.",
+      "Він фінішував {Vinstr}.",
       "Це {V} раз, коли я питаю.",
       "Сьогодні його {V} день народження.",
       "Візьміть {V} поворот ліворуч.",
       "Сьогодні {V} день місяця.",
       "Уважно прочитайте {V} розділ.",
       "Це мій {V} візит до цього міста.",
-      "Наша команда фінішувала {Vf}.",
+      "Наша команда фінішувала {Vfinstr}.",
       "Це була її {Vf} спроба.",
-      "Вона прийшла {Vf} у перегонах.",
-      "Ми святкуємо нашу {Vf} річницю.",
-      "Вона живе на {V} поверсі.",
+      "Вона прийшла {Vfinstr} у перегонах.",
+      "Ми святкуємо нашу {Vfacc} річницю.",
+      "Вона живе на {Vl} поверсі.",
       "Це {Vn} видання книги.",
       "Найважчим було {Vn} питання.",
       "Це {Vn} завдання у списку.",
     ],
     years: [
-      "Вона народилася у {V} році.",
-      "Ця подія відбулася у {V} році.",
-      "Цю будівлю збудовано у {V} році.",
-      "Він закінчив навчання у {V} році.",
-      "Компанію засновано у {V} році.",
-      "Альбом вийшов у {V} році.",
-      "Цей закон прийняли у {V} році.",
-      "Відкриття зроблено у {V} році.",
-      "Мої батьки одружилися у {V} році.",
-      "Фільм вийшов у {V} році.",
-      "Перше видання надруковано у {V} році.",
-      "Ми переїхали до цього міста у {V} році.",
-      "Міст відкрили у {V} році.",
-      "Це фото зроблено у {V} році.",
-      "Ця традиція почалася у {V} році.",
+      "Вона народилася у {Vl} році.",
+      "Ця подія відбулася у {Vl} році.",
+      "Цю будівлю збудовано у {Vl} році.",
+      "Він закінчив навчання у {Vl} році.",
+      "Компанію засновано у {Vl} році.",
+      "Альбом вийшов у {Vl} році.",
+      "Цей закон прийняли у {Vl} році.",
+      "Відкриття зроблено у {Vl} році.",
+      "Мої батьки одружилися у {Vl} році.",
+      "Фільм вийшов у {Vl} році.",
+      "Перше видання надруковано у {Vl} році.",
+      "Ми переїхали до цього міста у {Vl} році.",
+      "Міст відкрили у {Vl} році.",
+      "Це фото зроблено у {Vl} році.",
+      "Ця традиція почалася у {Vl} році.",
     ],
     decades: [
-      "Це сталося у {V}.",
-      "Цей стиль був популярний у {V}.",
-      "Музика була іншою у {V}.",
-      "Вони виросли у {V}.",
-      "Мода сильно змінилася у {V}.",
-      "Це був поширений тренд у {V}.",
-      "Технології швидко розвивались у {V}.",
-      "Багато чудових фільмів знято у {V}.",
-      "Люди одягалися інакше у {V}.",
-      "Ця пісня нагадує мені про {V}.",
-      "Економіка була сильною у {V}.",
-      "Автомобілі виглядали зовсім інакше у {V}.",
-      "Телебачення було величезним у {V}.",
-      "Життя було простішим у {V}.",
-      "Мої батьки познайомилися у {V}.",
+      "Це сталося {V}.",
+      "Цей стиль був популярний {V}.",
+      "Музика була іншою {V}.",
+      "Вони виросли {V}.",
+      "Мода сильно змінилася {V}.",
+      "Це був поширений тренд {V}.",
+      "Технології швидко розвивались {V}.",
+      "Багато чудових фільмів знято {V}.",
+      "Люди одягалися інакше {V}.",
+      "Ця пісня була хітом {V}.",
+      "Економіка була сильною {V}.",
+      "Автомобілі виглядали зовсім інакше {V}.",
+      "Телебачення було величезним {V}.",
+      "Життя було простішим {V}.",
+      "Мої батьки познайомилися {V}.",
     ],
     fractions: [
       "Додайте {V} склянки борошна.",
@@ -699,12 +718,12 @@ const SENTENCES = {
     ],
     large: [
       "Населення — {V}.",
-      "Загальна вартість — {V} гривень.",
+      "Загальна вартість — {V}.",
       "Ми отримали {V} заявок.",
       "Стадіон вміщує {V} глядачів.",
       "Вони продали {V} примірників за перший тиждень.",
       "Зареєстровано {V} користувачів.",
-      "Бюджет — {V} гривень.",
+      "Бюджет — {V}.",
       "Приблизно {V} людей прийшло.",
       "Відстань — {V} кілометрів.",
       "У компанії {V} працівників.",
@@ -744,13 +763,17 @@ function generateCardinal() {
 function generateOrdinal() {
   const n = randInt(1, 100);
 
-  // Gender cases for Ukrainian ordinals
+  // Gender/case forms for Ukrainian ordinals
   let cases = null;
   if (lang() === 'uk') {
     cases = {
-      nom: ordinalToWords(n),           // masculine (default)
-      f: ordinalToWords(n, 'f'),        // feminine
-      n: ordinalToWords(n, 'n'),        // neuter
+      nom: ordinalToWords(n),           // masculine nominative (default)
+      f: ordinalToWords(n, 'f'),        // feminine nominative
+      n: ordinalToWords(n, 'n'),        // neuter nominative
+      loc: ordinalToWords(n, 'loc'),    // locative masculine (на першому)
+      instr: ordinalToWords(n, 'instr'), // instrumental masculine (першим)
+      finstr: ordinalToWords(n, 'finstr'), // instrumental feminine (першою)
+      facc: ordinalToWords(n, 'facc'),  // accusative feminine (першу)
     };
   }
 
@@ -774,7 +797,8 @@ function generateOrdinal() {
  */
 function formatDecadeDisplay(decade, qualifier) {
   if (lang() === 'uk') {
-    const qualMap = { early: 'початок', mid: 'середина', late: 'кінець' };
+    // FIX 4: Use full prepositional phrases for Ukrainian decades
+    const qualMap = { early: 'на початку', mid: 'у середині', late: 'наприкінці' };
     const decNames = {
       50: "п'ятдесятих", 60: 'шістдесятих', 70: 'сімдесятих',
       80: 'вісімдесятих', 90: "дев'яностих"
@@ -799,12 +823,24 @@ function formatDecadeDisplay(decade, qualifier) {
  */
 function generateStandardYear(min, max) {
   const year = randInt(min, max);
+
+  // FIX 2: Ukrainian years need ordinal case forms
+  let cases = null;
+  if (lang() === 'uk') {
+    cases = {
+      nom: yearToWords(year),
+      loc: yearToWords(year, 'loc'),
+      gen: yearToWords(year, 'gen'),
+    };
+  }
+
   return {
     value: year,
     display: String(year),
     ttsText: yearToWords(year),
     lastDigit: year % 10,
     category: 'years',
+    cases,
   };
 }
 
@@ -1001,17 +1037,18 @@ function generateRoomBus() {
     label = type === 'room' ? 'Room' : 'Bus';
   }
 
-  // Case forms for Ukrainian
+  // Case forms for Ukrainian — FIX 7: use word forms instead of raw digits
   let cases = null;
   if (lang() === 'uk') {
+    const numWords = ukCardinal(number);
     const ukForms = type === 'room'
       ? { nom: 'кімната', gen: 'кімнати', acc: 'кімнату', loc: 'кімнаті' }
       : { nom: 'автобус', gen: 'автобуса', acc: 'автобус', loc: 'автобусі' };
     cases = {
-      nom: ukForms.nom + ' ' + number,
-      gen: ukForms.gen + ' ' + number,
-      acc: ukForms.acc + ' ' + number,
-      loc: ukForms.loc + ' ' + number,
+      nom: ukForms.nom + ' ' + numWords,
+      gen: ukForms.gen + ' ' + numWords,
+      acc: ukForms.acc + ' ' + numWords,
+      loc: ukForms.loc + ' ' + numWords,
     };
   } else if (lang() === 'de') {
     cases = {
@@ -1211,11 +1248,31 @@ export function getSentence(cv) {
 
   const langSentences = SENTENCES[lang()] || SENTENCES.en;
   const templates = langSentences[templateCat] || langSentences.cardinals;
-  const template = pick(templates);
-  
+  let template = pick(templates);
+
+  // FIX 5: Handle gendered cardinal {V:f} for Ukrainian
+  if (lang() === 'uk' && typeof cv.value === 'number' && template.includes('{V:f}')) {
+    template = template.replace('{V:f}', cardinalToWords(cv.value, 'f'));
+  }
+
+  // FIX 5: Handle noun agreement {form1|form2|form5} for Ukrainian
+  if (lang() === 'uk' && typeof cv.value === 'number') {
+    template = template.replace(/\{([^{}|]+)\|([^{}|]+)\|([^{}|]+)\}/g, (_match, f1, f2, f5) => {
+      const dc = ukDeclensionCase(cv.value);
+      if (dc === 1) return f1;
+      if (dc === 2) return f2;
+      return f5;
+    });
+  }
+
   // Case-aware replacement (Ukrainian/German)
   if (cv.cases) {
+    // Order matters: longer placeholders BEFORE shorter to avoid substring corruption
+    // E.g. {Vfinstr} before {Vf}, {Vinstr} before {V}, {Vfacc} before {Vf}/{Va}
     return template
+      .replace('{Vinstr}', cv.cases.instr || cv.cases.nom || cv.ttsText)
+      .replace('{Vfinstr}', cv.cases.finstr || cv.cases.f || cv.ttsText)
+      .replace('{Vfacc}', cv.cases.facc || cv.cases.f || cv.ttsText)
       .replace('{Vg}', cv.cases.gen || cv.cases.nom || cv.ttsText)
       .replace('{Va}', cv.cases.acc || cv.cases.nom || cv.ttsText)
       .replace('{Vl}', cv.cases.loc || cv.cases.nom || cv.ttsText)
@@ -1223,7 +1280,7 @@ export function getSentence(cv) {
       .replace('{Vn}', cv.cases.n || cv.ttsText)
       .replace('{V}', cv.cases.nom || cv.ttsText);
   }
-  
+
   return template.replace('{V}', cv.ttsText);
 }
 
