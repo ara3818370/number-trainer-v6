@@ -667,12 +667,7 @@ function showSummary() {
   if (getSetting('sounds')) sound.playComplete();
   if (getSetting('haptics')) haptics.hapticComplete();
 
-  if (newUnlocks.length > 0) {
-    const unlockName = getCategoryLabel(newUnlocks[0]);
-    setTimeout(() => {
-      showToast(t('summary.new_unlock').replace('{category}', unlockName));
-    }, 1200);
-  }
+  // All categories unlocked by default — no unlock toast needed
 
   document.body.style.filter = '';
 }
