@@ -5,7 +5,7 @@
 
 import { initSettings, getSetting, setSetting, onSettingChange, showSettings, hideSettings, initSettingsUI, getThemeForSystem } from './settings.js';
 import { initI18n, t, applyTranslations, setUILang, setLearnLang, getLearnLang, getUILang, getCategoryLabel, getCategoryDesc } from './i18n.js';
-import { initProgress, getUnlockedCategories, getMasteredCategories, isCategoryUnlocked, recordSession, getNextUnlock, getPrerequisiteCategory, unlockAll, isOnboardingDone, UNLOCK_ORDER } from './progress.js';
+import { initProgress, getMasteredCategories, recordSession, CATEGORY_ORDER } from './progress.js';
 import { shouldShowOnboarding, runOnboarding, handleOnboardingAnswer } from './onboarding.js';
 import { CATEGORY_META } from './categories.js';
 import * as game from './game.js';
@@ -257,24 +257,20 @@ function renderCategoryMenu() {
   const container = document.getElementById('category-grid');
   if (!container) return;
 
-  const unlocked = getUnlockedCategories();
   const mastered = getMasteredCategories();
-  const allCategories = UNLOCK_ORDER;
-  const totalVisible = allCategories.length;
 
-  container.setAttribute('data-count', String(totalVisible));
+  container.setAttribute('data-count', String(CATEGORY_ORDER.length));
   container.innerHTML = '';
 
-  for (const catId of allCategories) {
+  for (const catId of CATEGORY_ORDER) {
     const meta = CATEGORY_META[catId];
     if (!meta) continue;
 
-    const isUnlocked = unlocked.includes(catId);
     const isMastered = mastered.includes(catId);
     const isMixed = catId === 'mixed';
 
     const card = document.createElement('button');
-    card.className = 'category-card' + (isUnlocked ? '' : ' locked') + (isMixed ? ' category-card--mixed' : '');
+    card.className = 'category-card' + (isMixed ? ' category-card--mixed' : '');
     card.dataset.category = catId;
 
     // Icon (SVG from ICONS map)
@@ -311,23 +307,7 @@ function renderCategoryMenu() {
       card.appendChild(check);
     }
 
-    // Lock icon
-    if (!isUnlocked) {
-      const lock = document.createElement('span');
-      lock.className = 'category-lock';
-      lock.textContent = '🔒';
-      card.appendChild(lock);
-    }
-
-    card.addEventListener('click', () => {
-      if (isUnlocked) {
-        startTraining(catId);
-      } else {
-        const prereq = getPrerequisiteCategory(catId);
-        const prereqName = prereq ? getCategoryLabel(prereq) : '...';
-        showToast(t('categories.unlock_hint').replace('{category}', prereqName));
-      }
-    });
+    card.addEventListener('click', () => startTraining(catId));
 
     container.appendChild(card);
   }
@@ -350,7 +330,6 @@ function startTraining(categoryId) {
   if (catLabel) catLabel.textContent = getCategoryLabel(categoryId);
 
   updateProgressBar(0);
-  updateStreakDisplay(0);
   updateScoreDisplay(0, 0);
   document.body.style.filter = '';
 
@@ -376,9 +355,7 @@ function playNextRound() {
   const optionsGrid = document.getElementById('options-grid');
   if (optionsGrid) optionsGrid.innerHTML = '';
 
-  // Update streak + progress + score
-  const streak = game.getStreak();
-  updateStreakDisplay(streak.current);
+  // Update progress + score
   const score = game.getScore();
   updateProgressBar(score.total);
   updateScoreDisplay(score.total, score.correct);
@@ -512,7 +489,6 @@ async function handleAnswer(selectedDisplay, buttonIndex, options, target) {
     }
 
     document.body.style.filter = '';
-    updateStreakDisplay(0);
     playNextRound();
   }
 }
@@ -548,13 +524,9 @@ function handleStreakEffects(streak) {
     document.body.style.transition = 'filter 2s ease';
     document.body.style.filter = `hue-rotate(${deg}deg)`;
   }
-
-  updateStreakDisplay(streak);
 }
 
-function updateStreakDisplay(streak) {
-  // Streak display disabled
-}
+
 
 // ── Score Display ──────────────────────────────────────────────────────────
 
@@ -660,14 +632,10 @@ function showSummary() {
   }
 
   // Record to progress
-  const { newUnlocks, newMastery } = recordSession(
-    currentCategory, stats.correct, stats.total, stats.maxStreak
-  );
+  recordSession(currentCategory, stats.correct, stats.total, stats.maxStreak);
 
   if (getSetting('sounds')) sound.playComplete();
   if (getSetting('haptics')) haptics.hapticComplete();
-
-  // All categories unlocked by default — no unlock toast needed
 
   document.body.style.filter = '';
 }
@@ -760,12 +728,7 @@ function wireEvents() {
     menuBtn.addEventListener('click', () => showScreen('menu'));
   }
 
-  // Unlock all
-  document.addEventListener('nlt-unlock-all', () => {
-    unlockAll();
-    renderCategoryMenu();
-    showToast(t('settings.unlocked_all'));
-  });
+
 }
 
 // ── Service Worker ─────────────────────────────────────────────────────────
