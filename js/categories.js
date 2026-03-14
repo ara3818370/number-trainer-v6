@@ -50,8 +50,8 @@ function dispatch(enFn, deFn, ukFn, ...args) {
 }
 
 function cardinalToWords(n) { return dispatch(enCardinal, deCardinal, ukCardinal, n); }
-function ordinalToWords(n) { return dispatch(enOrdinal, deOrdinal, ukOrdinal, n); }
-function ordinalSuffix(n) { return dispatch(enOrdinalSuffix, deOrdinalSuffix, ukOrdinalSuffix, n); }
+function ordinalToWords(n, gender) { return dispatch(enOrdinal, deOrdinal, ukOrdinal, n, gender); }
+function ordinalSuffix(n, gender) { return dispatch(enOrdinalSuffix, deOrdinalSuffix, ukOrdinalSuffix, n, gender); }
 function yearToWords(year) { return dispatch(enYear, deYear, ukYear, year); }
 function decadeToWords(decade, qualifier) { return dispatch(enDecade, deDecade, ukDecade, decade, qualifier); }
 function fractionToWords(whole, num, den) { return dispatch(enFraction, deFraction, ukFraction, whole, num, den); }
@@ -530,19 +530,19 @@ const SENTENCES = {
     ordinals: [
       "Він фінішував {V}.",
       "Це {V} раз, коли я питаю.",
-      "Вона живе на {V} поверсі.",
       "Сьогодні його {V} день народження.",
-      "Ми святкуємо нашу {V} річницю.",
       "Візьміть {V} поворот ліворуч.",
-      "Вона прийшла {V} у перегонах.",
-      "Це {V} видання книги.",
       "Сьогодні {V} день місяця.",
       "Уважно прочитайте {V} розділ.",
-      "Він був {V} людиною, яка прийшла.",
-      "Наша команда фінішувала {V}.",
-      "Це була її {V} спроба.",
-      "Найважчим було {V} питання.",
       "Це мій {V} візит до цього міста.",
+      "Наша команда фінішувала {Vf}.",
+      "Це була її {Vf} спроба.",
+      "Вона прийшла {Vf} у перегонах.",
+      "Ми святкуємо нашу {Vf} річницю.",
+      "Вона живе на {V} поверсі.",
+      "Це {Vn} видання книги.",
+      "Найважчим було {Vn} питання.",
+      "Це {Vn} завдання у списку.",
     ],
     years: [
       "Вона народилася у {V} році.",
@@ -743,12 +743,24 @@ function generateCardinal() {
  */
 function generateOrdinal() {
   const n = randInt(1, 100);
+
+  // Gender cases for Ukrainian ordinals
+  let cases = null;
+  if (lang() === 'uk') {
+    cases = {
+      nom: ordinalToWords(n),           // masculine (default)
+      f: ordinalToWords(n, 'f'),        // feminine
+      n: ordinalToWords(n, 'n'),        // neuter
+    };
+  }
+
   return {
     value: n,
     display: n + ordinalSuffix(n),
     ttsText: ordinalToWords(n),
     lastDigit: n % 10,
     category: 'ordinals',
+    cases,
   };
 }
 
@@ -1201,13 +1213,15 @@ export function getSentence(cv) {
   const templates = langSentences[templateCat] || langSentences.cardinals;
   const template = pick(templates);
   
-  // Case-aware replacement (Ukrainian/German roomBus)
+  // Case-aware replacement (Ukrainian/German)
   if (cv.cases) {
     return template
-      .replace('{Vg}', cv.cases.gen)
-      .replace('{Va}', cv.cases.acc)
-      .replace('{Vl}', cv.cases.loc)
-      .replace('{V}', cv.cases.nom);
+      .replace('{Vg}', cv.cases.gen || cv.cases.nom || cv.ttsText)
+      .replace('{Va}', cv.cases.acc || cv.cases.nom || cv.ttsText)
+      .replace('{Vl}', cv.cases.loc || cv.cases.nom || cv.ttsText)
+      .replace('{Vf}', cv.cases.f || cv.ttsText)
+      .replace('{Vn}', cv.cases.n || cv.ttsText)
+      .replace('{V}', cv.cases.nom || cv.ttsText);
   }
   
   return template.replace('{V}', cv.ttsText);
