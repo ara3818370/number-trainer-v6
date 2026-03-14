@@ -553,15 +553,7 @@ function handleStreakEffects(streak) {
 }
 
 function updateStreakDisplay(streak) {
-  const counter = document.getElementById('streak-counter');
-  if (!counter) return;
-
-  if (streak >= 3) {
-    counter.textContent = t('streak.counter').replace('{n}', String(streak));
-    counter.classList.add('visible');
-  } else {
-    counter.classList.remove('visible');
-  }
+  // Streak display disabled
 }
 
 // ── Score Display ──────────────────────────────────────────────────────────
