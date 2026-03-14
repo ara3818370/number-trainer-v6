@@ -59,7 +59,7 @@ export function initProgress() {
 
 export function getUnlockedCategories() {
   if (!data) initProgress();
-  return UNLOCK_ORDER.filter(id => data.unlocked.includes(id));
+  return [...UNLOCK_ORDER];
 }
 
 export function getMasteredCategories() {
@@ -68,8 +68,7 @@ export function getMasteredCategories() {
 }
 
 export function isCategoryUnlocked(id) {
-  if (!data) initProgress();
-  return data.unlocked.includes(id);
+  return true;
 }
 
 export function getNextUnlock() {
