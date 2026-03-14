@@ -8,6 +8,11 @@ import { getLearnLang } from './i18n.js';
 const VOICE_WAIT_TIMEOUT_MS = 3000;
 const VOICE_POLL_INTERVAL_MS = 250;
 const VOICE_POLL_MAX_MS = 3000;
+const CANCEL_DELAY_MS = 100;
+const SPEECH_DURATION_FACTOR = 120;  // ms per character for estimated speech duration
+const SAFETY_TIMEOUT_BUFFER_MS = 3000;
+const MIN_SPEECH_DURATION_MS = 1000;
+const MIN_REINFORCEMENT_DURATION_MS = 2000;
 
 const RATE_MAP = {
   slow: 0.7,
@@ -31,7 +36,6 @@ let selectedDeVoice = null;
 let selectedUkVoice = null;
 let available = false;
 let initialized = false;
-let onInterruptCallback = null;
 let noEnglishVoiceWarning = false;
 let noGermanVoiceWarning = false;
 let noUkrainianVoiceWarning = false;
@@ -250,13 +254,13 @@ export function speak(text, speed = 'normal') {
       // Use a safety timeout based on estimated speech duration.
       // Generous multiplier for long texts (large numbers, currencies).
       let ended = false;
-      const estimatedMs = Math.max(text.length * 120 / (RATE_MAP[speed] || 1), 1000);
+      const estimatedMs = Math.max(text.length * SPEECH_DURATION_FACTOR / (RATE_MAP[speed] || 1), MIN_SPEECH_DURATION_MS);
       const safetyTimeout = setTimeout(() => {
         if (!ended) {
           ended = true;
           resolve();
         }
-      }, estimatedMs + 3000);
+      }, estimatedMs + SAFETY_TIMEOUT_BUFFER_MS);
 
       utterance.onend = () => {
         if (!ended) {
@@ -280,7 +284,7 @@ export function speak(text, speed = 'normal') {
       };
 
       speechSynthesis.speak(utterance);
-    }, 100);
+    }, CANCEL_DELAY_MS);
   });
 }
 
@@ -316,10 +320,10 @@ export function speakReinforcement(text) {
 
     let ended = false;
     // Generous timeout for large numbers (e.g. "дев'ятсот п'ятдесят три тисячі...")
-    const estimatedMs = Math.max(text.length * 120, 2000);
+    const estimatedMs = Math.max(text.length * SPEECH_DURATION_FACTOR, MIN_REINFORCEMENT_DURATION_MS);
     const safetyTimeout = setTimeout(() => {
       if (!ended) { ended = true; resolve(); }
-    }, estimatedMs + 3000);
+    }, estimatedMs + SAFETY_TIMEOUT_BUFFER_MS);
 
     utterance.onend = () => {
       if (!ended) { ended = true; clearTimeout(safetyTimeout); resolve(); }
@@ -330,22 +334,8 @@ export function speakReinforcement(text) {
     };
 
     speechSynthesis.speak(utterance);
-    }, 100); // Brief delay after cancel
+    }, CANCEL_DELAY_MS); // Brief delay after cancel
   });
-}
-
-// ── Warm-up ────────────────────────────────────────────────────────────────
-
-export function warmUp() {
-  if (!window.speechSynthesis) return;
-  const utterance = new SpeechSynthesisUtterance(' ');
-  utterance.volume = 0;
-  const voice = getActiveVoice();
-  if (voice) {
-    utterance.voice = voice;
-    utterance.lang = voice.lang || 'en-US';
-  }
-  speechSynthesis.speak(utterance);
 }
 
 // ── Stop ───────────────────────────────────────────────────────────────────
@@ -371,18 +361,12 @@ export function hasVoiceForLearnLang() {
   return !!getActiveVoice();
 }
 
-// ── Interruption handling ──────────────────────────────────────────────────
-
-export function onInterrupt(callback) {
-  onInterruptCallback = callback;
-}
+// ── Visibility handling ────────────────────────────────────────────────────
 
 if (typeof document !== 'undefined') {
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       stop();
-    } else if (onInterruptCallback) {
-      onInterruptCallback();
     }
   });
 }
