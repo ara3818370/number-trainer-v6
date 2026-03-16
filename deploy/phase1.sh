@@ -24,7 +24,7 @@ MaxAuthTries 3
 X11Forwarding no
 AllowAgentForwarding no
 SSHEOF
-systemctl restart sshd
+systemctl restart ssh
 echo "VERIFY SSH: permitrootlogin=$(sshd -T 2>/dev/null | grep permitrootlogin | awk '{print $2}') passwordauth=$(sshd -T 2>/dev/null | grep passwordauthentication | awk '{print $2}')"
 
 echo "[5/9] UFW firewall..."
