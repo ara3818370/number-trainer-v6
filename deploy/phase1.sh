@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-exec > >(tee /tmp/phase1.log) 2>&1
 echo "=== PHASE 1: OS HARDENING $(date -u) ==="
 
 echo "[1/9] System update..."
